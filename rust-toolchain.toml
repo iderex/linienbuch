@@ -1,0 +1,16 @@
+# The compiler this repository is built with, pinned in the tree.
+#
+# Without this file the compiler is whatever the machine happens to have, so two
+# builds of one commit can differ for a reason that is recorded nowhere. With it,
+# a compiler upgrade arrives as a commit, with a reason, and the release
+# artefacts it changes are compared against a stated version.
+#
+# An exact patch version rather than "stable". "stable" moves under the tree
+# every six weeks and would make the pin a description of the release channel
+# instead of a pin.
+#
+# Changing this line changes the bytes of every release artefact, so it is its
+# own change with its own issue.
+
+[toolchain]
+channel = "1.97.0"

@@ -1,0 +1,20 @@
+# Build configuration, tracked so that it is part of the commit rather than part
+# of the machine.
+#
+# The linker flag below is what makes two builds of one commit, in two different
+# directories, produce the same bytes on the msvc target. Without it a release
+# executable built twice differs in twenty bytes: the PE header timestamp and the
+# sixteen byte build signature that the linker derives per link. Neither is a
+# fact about the source, and both defeat any claim that a released artefact can
+# be reproduced by the reader.
+#
+# Measured, and the measurement with and without the flag is in the pull request
+# that added this file. Measured on x86_64-pc-windows-msvc only; no other target
+# has been built twice and compared, so nothing is claimed for one.
+#
+# Scoped to the msvc environment because /Brepro is an msvc linker flag. The
+# windows-gnu and unix targets link with different drivers that would reject it.
+# They are not covered here rather than being covered silently.
+
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-Clink-arg=/Brepro"]
