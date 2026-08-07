@@ -1,0 +1,20 @@
+# The API surfaces that reach the network, one per line. Blank lines and lines
+# beginning with a hash are ignored.
+#
+# This list is data in a file rather than literals in the guard's source for one
+# reason: the guard scans the tracked tree, its own source is in that tree, and a
+# needle written there would make the guard refuse itself. The alternative was to
+# exclude the guard's own file from the scan, which is a hole in exactly the file
+# best placed to hide something.
+#
+# The list is a floor and not a boundary. It holds the surfaces this repository
+# can reach today through the standard library. A crate wrapping a socket in a
+# name that is not here passes, and the entry for it is added when the crate is
+# added.
+
+TcpStream::connect
+TcpStream::connect_timeout
+TcpListener::bind
+UdpSocket::bind
+UdpSocket::connect
+UdpSocket::send_to
