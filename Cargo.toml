@@ -16,3 +16,18 @@ rust-version = "1.97.0"
 publish = false
 
 [dependencies]
+
+# The integration harness. `test = false` keeps it out of the default suite by
+# construction rather than by a naming convention: `cargo test` does not build or
+# run this target at all, and no filter, no attribute and no directory name is
+# doing the work. Its own command is `cargo test --test integration`, which still
+# builds and runs it.
+#
+# Cargo would otherwise auto-discover `tests/integration/main.rs` as an ordinary
+# test target and run it with the rest, which is measured rather than supposed:
+# it did, and the leg that opens a socket to an upstream host ran inside a
+# `cargo test` before this section existed.
+[[test]]
+name = "integration"
+path = "tests/integration/main.rs"
+test = false
