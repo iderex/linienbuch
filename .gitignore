@@ -1,0 +1,4 @@
+# Build output. Everything under it is derived from the tracked tree and the
+# pinned toolchain, so tracking it would put a copy of the build in the history
+# and make every build a diff.
+/target

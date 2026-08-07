@@ -1,0 +1,18 @@
+# The build configuration for this repository.
+#
+# The package name is the repository name. It is not an answer to the question
+# of what the command an operator runs is called, which is entry 9 of #1 and is
+# open. Renaming the binary target before a release is one line here; the name
+# is used now because a cargo package cannot exist without one.
+#
+# What the crate contains is not decided here either. #3 owns the layout. This
+# file exists so that there is something to pin, lock and build reproducibly.
+
+[package]
+name = "linienbuch"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.97.0"
+publish = false
+
+[dependencies]
