@@ -1,0 +1,47 @@
+# format, one of the four checks #5 names. The check-run name is the contract;
+# see the note in build.yml for why this job carries no `name:`.
+name: format
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main]
+
+# Read-only. Nothing here writes to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the toolchain this tree pins
+        run: rustup toolchain install
+
+      - name: Add the formatter
+        # The toolchain file names a channel and no components, so which
+        # components arrive depends on the rustup profile the machine is set to.
+        # Asking for it explicitly is idempotent where it is already there and is
+        # the difference between a red run and a missing binary where it is not.
+        run: rustup component add rustfmt
+
+      - name: Refuse an unformatted tree
+        # --check reports and refuses rather than rewriting, so this leg never
+        # changes the tree it is judging.
+        #
+        # `--all` reaches every target in the package, including the integration
+        # harness, which `--all-targets` does not reach elsewhere in this gate.
+        # Measured: a deliberately misformatted function appended to
+        # `tests/integration/main.rs` was reported by this exact command.
+        run: cargo fmt --all -- --check
