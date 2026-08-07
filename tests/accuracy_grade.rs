@@ -1,7 +1,7 @@
 //! The published scale maps as published, and a converted value never claims to
 //! know more than the source said.
 
-use linienbuch::accuracy::{Converted, Grade, Letters, NotAGrade};
+use linienbuch::spectroscopy::accuracy::{Converted, Grade, Letters, NotAGrade};
 
 /// The whole table, spelled out here rather than read from the code it checks.
 ///

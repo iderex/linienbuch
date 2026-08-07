@@ -25,3 +25,29 @@
 # next hook has the same first line and a rule that has to be remembered per file
 # is one that will be forgotten.
 .githooks/** text eol=lf
+
+# Fixtures, and the cases that prove the fixture policy bites.
+#
+# A fixture exists to show a parser the bytes an upstream actually produces, so a
+# fixture that was rewritten on the way into a working tree is showing it
+# something else. `docs/decisions/fixtures.md` states that rule and
+# `tests/fixture_policy.rs` refuses a `raw` fixture holding a byte that does not
+# survive the trip.
+#
+# That check found this. Its own cases are `raw` and were written by hand, so
+# they had never made the round trip; the first checkout after they landed gave
+# them a carriage return each and the check refused them, on one platform and not
+# on the other:
+#
+#     od -c tests/fixture_policy/cases/an_extract_with_no_licence/fixtures/invented_lines.txt | tail -2
+#     0000120   0   .   9   3           3   7   1   6   2   .   7   5  \r  \n
+#
+# against `\n` in the index. So the bytes are pinned here, which is the same
+# repair as the one above and is the policy applied to its own evidence.
+#
+# What this does not do is make a carriage return storable in a raw fixture. It
+# makes `Encoding: raw` mean the same thing on every clone, and a fixture that
+# genuinely needs that byte is still one that belongs in `base64`, which is what
+# the policy says and what the check refuses on.
+tests/fixtures/** text eol=lf
+tests/fixture_policy/cases/** text eol=lf

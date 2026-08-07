@@ -6,7 +6,7 @@
 //! thing that can say so is a register where the reference is its own record
 //! rather than a string inside each source.
 
-use linienbuch::provenance::{
+use linienbuch::register::provenance::{
     Attribution, ClaimId, Date, Digest, DigestAlgorithm, Reference, ReferenceId, Refused, Register,
     Snapshot, Source, SourceId, TermsId,
 };
