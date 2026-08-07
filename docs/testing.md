@@ -207,15 +207,21 @@ The declaration is what stopped it.
 
     cargo test --test integration
 
-Nothing in the merge gate runs it, and nothing in the merge gate runs cargo at
-all today:
+Nothing in the merge gate runs it. The gate does run cargo now, which it did not
+when this section was first written, and two of the four checks #5 added name
+this target by name:
 
-    grep -rn "cargo" .github/workflows/
-    .github/workflows/dco.yml:57:            # Trusted first-party automation authors bot commits that cannot
+    git grep -n "test integration" -- .github/workflows/
+    .github/workflows/build.yml:64:        run: cargo build --locked --test integration
+    .github/workflows/lint.yml:51:        run: cargo clippy --locked --test integration -- -D warnings
 
-One hit, the word inside a comment in an unrelated file. The checks are #5's and
-this harness must not be added to them: a source going down for an afternoon
-must not block unrelated work.
+Both compile it and neither runs it, and that is the whole of the distinction.
+Compiling the harness reads its source; only `cargo test` would execute the leg
+that opens a socket. So the rule this paragraph has always carried is unchanged:
+the harness must not be added to the checks, because a source going down for an
+afternoon must not block unrelated work. Compiling it costs nothing an outage can
+take away, and leaving it uncompiled would let tracked source rot outside every
+check that reads the rest of the tree.
 
 ### What each leg needs
 

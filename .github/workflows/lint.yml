@@ -1,0 +1,51 @@
+# lint, one of the four checks #5 names. The check-run name is the contract; see
+# the note in build.yml for why this job carries no `name:`.
+name: lint
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main]
+
+# Read-only. Nothing here writes to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the toolchain this tree pins
+        run: rustup toolchain install
+
+      - name: Add the linter
+        run: rustup component add clippy
+
+      - name: Lint the crate and every target cargo discovers
+        # The level is the default lint set with warnings denied, which is the
+        # level the tree passes at today. It is not raised here to a level the
+        # tree does not pass, because a check that is red on arrival teaches
+        # people to ignore it.
+        #
+        # There is no allow list in this file and there is none anywhere else
+        # either. An exception, when one is needed, is written at the code it
+        # excuses and carries its reason there, where the person changing that
+        # code will read it, rather than in a global list nobody opens.
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Lint the integration harness
+        # Same reason as in build.yml: --all-targets does not reach a target
+        # declared with `test = false`, and the harness is tracked source that a
+        # linter should read. Linting it does not run it.
+        run: cargo clippy --locked --test integration -- -D warnings
