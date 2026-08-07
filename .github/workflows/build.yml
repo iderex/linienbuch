@@ -3,6 +3,11 @@
 # the gate without anything going red. The job below carries no `name:` for that
 # reason, because the check-run name then defaults to the job id, which is the
 # one place the string appears.
+#
+# What this leg does is not written here. It is one call into the gate command,
+# which is the same implementation the pre-push hook runs, so the two cannot
+# disagree about what a build leg is. A test in `src/bin/gate.rs` reads this file
+# and refuses any cargo command in it that is not that call.
 name: build
 
 on:
@@ -23,18 +28,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      # Warnings are errors. A warning that is allowed to accumulate is a warning
-      # nobody reads.
-      #
-      # RUSTFLAGS in the environment replaces any `rustflags` a `.cargo/config.toml`
-      # would have supplied, rather than adding to it. Nothing is lost on this
-      # runner: the only rustflags this tree carries are scoped to
-      # `cfg(all(windows, target_env = "msvc"))` and do not apply to linux. On the
-      # msvc host they would apply, and the same command run there loses the
-      # linker flag that makes a release artefact reproducible. That is the reason
-      # this is written here rather than assumed harmless everywhere.
-      RUSTFLAGS: "-D warnings"
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -47,18 +40,5 @@ jobs:
         # reads it, so the workflow cannot drift away from the tree's own answer.
         run: rustup toolchain install
 
-      - name: Compile the crate and every target cargo discovers
-        # --locked: build the dependency versions in Cargo.lock or fail, rather
-        # than resolving something newer and reporting it as this commit.
-        run: cargo build --locked --all-targets
-
-      - name: Compile the integration harness
-        # --all-targets does not reach it. The harness is declared in Cargo.toml
-        # with `test = false`, which takes it out of the target set --all-targets
-        # selects, and that is measured rather than supposed: after
-        # `cargo build --locked --all-targets` the deps directory holds no
-        # artefact for it. Compiling it is not running it. Nothing in this gate
-        # runs the harness, because a source going down for an afternoon must not
-        # block unrelated work, and that is `docs/testing.md`'s rule rather than
-        # this file's.
-        run: cargo build --locked --test integration
+      - name: Run the build leg of the gate
+        run: cargo run --locked --quiet --bin gate -- build

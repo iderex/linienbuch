@@ -32,22 +32,46 @@ make the mark point at nothing.
 
 ## Before anything else
 
-Run the gate command before you push.
+    cargo run --locked --quiet --bin gate
 
-`PROSE, NOT ENFORCEMENT`, `OWED`, issue #9. There is no gate command in this
-tree yet. #9 is the issue that defines it and the hook that calls it, and until
-that lands the sentence above names something that does not exist, so nothing
-local refuses a push and the first refusal a change meets is on the pull
-request. This paragraph is the whole disclosure, and it is here rather than
-omitted because a contributor who followed a confident instruction and found
-nothing to run would reasonably conclude the instruction was wrong about
-everything else too.
+That is the whole gate. Its legs run in order and it stops at the first failure.
+What the legs are is not written here: the run prints them, and a list in this
+file would drift against the thing that decides them. Ask for one leg by naming
+it, and the command tells you which names it knows.
 
-When the gate command exists, the hook that runs it is a courtesy that shortens
-the loop and never the enforcement. A hook lives in a clone's local git
-configuration, it is absent from a fresh clone, and it is skippable by anyone
-who reads its own documentation. What stands behind a merge is the ruleset on
-the default branch and the checks that run on the pull request.
+The workflows that run on a pull request do not restate those legs. Each of them
+invokes the command above and asks for one, so there is one procedure and not
+two. A test refuses a workflow that states a command of its own.
+
+The run says what it examined, and it says what it did not. Everything in this
+repository that judges a change and that the command does not run is printed at
+the end of every run, with what it needs and how to ask for it, so a green run
+that covered less than the whole set cannot be read as one that covered it.
+
+Install the hook once per clone:
+
+    git config core.hooksPath .githooks
+
+`PROSE, NOT ENFORCEMENT`, `TERMINAL`, for installing it. Whether a clone pointed
+`core.hooksPath` at that directory is a fact of that clone's local git
+configuration. No tree holds it, so nothing here can read it and no check is
+owed. The sentence above is the whole disclosure and this mark does not soften
+it.
+
+The hook is a courtesy that shortens the loop and it is not the enforcement. It
+is absent from a fresh clone until the line above is run, and `git push
+--no-verify` skips it in a clone that has it. That is written here rather than
+left to be discovered, because a hook whose escape hatch is a secret is one
+people work around by deleting.
+
+What stands behind a merge is the ruleset on the default branch, quoted under
+`## No work without an issue`, and the checks that run on the pull request.
+
+`PROSE, NOT ENFORCEMENT`, `OWED`, issue #48, and it is the larger half. The
+ruleset quoted below carries no `required_status_checks`, so a red check refuses
+nothing today and a change can be merged over one. #48 is the issue that makes
+them required. Until it lands, the command above is the only thing that will tell
+you before somebody reads the run and notices.
 
 ## This document lists no checks
 
