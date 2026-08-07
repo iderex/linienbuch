@@ -500,6 +500,34 @@ fn a_base64_fixture_that_is_not_base64_is_refused() {
     );
 }
 
+/// The directories that hold fixtures are pinned, so that `Encoding: raw` means
+/// the same bytes on every clone.
+///
+/// Without the pin, a raw fixture arrives holding a carriage return wherever git
+/// is set to rewrite line endings, and the refusal above fires there and nowhere
+/// else. That failure cannot be caught by running the suite in one place, which
+/// is the whole reason this test reads the pin rather than the bytes: it is red
+/// everywhere the moment the pin goes, including where the bytes would still
+/// have been fine.
+#[test]
+fn the_directories_that_hold_fixtures_are_pinned() {
+    let path = manifest_dir().join(".gitattributes");
+    let text =
+        fs::read_to_string(&path).unwrap_or_else(|e| panic!("cannot read {}: {e}", path.display()));
+
+    for directory in ["tests/fixtures/**", "tests/fixture_policy/cases/**"] {
+        let pinned = text.lines().any(|line| {
+            let mut parts = line.split_whitespace();
+            parts.next() == Some(directory) && line.contains("text") && line.contains("eol=lf")
+        });
+        assert!(
+            pinned,
+            ".gitattributes does not pin the bytes under {directory}, so a raw \
+             fixture there means different bytes on different clones"
+        );
+    }
+}
+
 /// The absence of the fixture directory is a state of its own.
 ///
 /// Without this, a run over a directory that is not there returns no findings
