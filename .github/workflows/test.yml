@@ -1,5 +1,6 @@
 # test, one of the four checks #5 names. The check-run name is the contract; see
-# the note in build.yml for why this job carries no `name:`.
+# the note in build.yml for why this job carries no `name:` and for why the leg
+# itself is not written out here.
 name: test
 
 on:
@@ -29,15 +30,5 @@ jobs:
       - name: Install the toolchain this tree pins
         run: rustup toolchain install
 
-      - name: Run the default suite
-        # The default suite and nothing else. It takes no network, opens no
-        # display and needs no elevation; that constraint belongs to
-        # `docs/testing.md` and is not restated as a flag here. The integration
-        # harness is outside this command by construction rather than by a filter
-        # written here: `Cargo.toml` declares it with `test = false`, so this
-        # invocation neither builds nor runs it.
-        #
-        # A run that covered less than the whole set says so on its own. Every
-        # leg the harness holds prints an ignored line naming what it needs, so
-        # the output below cannot be read as a run that covered everything.
-        run: cargo test --locked
+      - name: Run the test leg of the gate
+        run: cargo run --locked --quiet --bin gate -- test

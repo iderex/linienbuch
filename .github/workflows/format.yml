@@ -1,5 +1,6 @@
 # format, one of the four checks #5 names. The check-run name is the contract;
-# see the note in build.yml for why this job carries no `name:`.
+# see the note in build.yml for why this job carries no `name:` and for why the
+# leg itself is not written out here.
 name: format
 
 on:
@@ -36,12 +37,5 @@ jobs:
         # the difference between a red run and a missing binary where it is not.
         run: rustup component add rustfmt
 
-      - name: Refuse an unformatted tree
-        # --check reports and refuses rather than rewriting, so this leg never
-        # changes the tree it is judging.
-        #
-        # `--all` reaches every target in the package, including the integration
-        # harness, which `--all-targets` does not reach elsewhere in this gate.
-        # Measured: a deliberately misformatted function appended to
-        # `tests/integration/main.rs` was reported by this exact command.
-        run: cargo fmt --all -- --check
+      - name: Run the format leg of the gate
+        run: cargo run --locked --quiet --bin gate -- format

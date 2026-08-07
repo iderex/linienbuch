@@ -1,0 +1,27 @@
+# The hook is a file a shell executes, not a file a person reads, so its bytes
+# are pinned here rather than left to a clone's local configuration.
+#
+# What is measured. git rewrites the hook's line endings on the way into a
+# working tree on at least one platform, so the file the shell is handed is not
+# the file that was committed. On x86_64-pc-windows-msvc with core.autocrlf true,
+# before this file existed:
+#
+#     git --work-tree=<elsewhere> checkout-index -f -- .githooks/pre-push
+#     od -c <elsewhere>/.githooks/pre-push | head -1
+#     0000000   #   !   /   b   i   n   /   s   h  \r  \n   #       R   u   n
+#
+# so the first line arrived as `#!/bin/sh` followed by a carriage return.
+#
+# What is not measured, and is the reason rather than the evidence. A shell that
+# reads that line looks for an interpreter whose name ends in a carriage return
+# and refuses the hook, with a message that points at the interpreter rather than
+# at the byte. That was NOT reproduced here: the shell on the machine this was
+# written on ran a script with that shebang without complaint. The shell git
+# hands a hook to is not the same program everywhere, and the failure is one
+# nobody would read correctly, so the bytes are pinned rather than the behaviour
+# assumed to hold.
+#
+# This pins everything under that directory rather than one file, because the
+# next hook has the same first line and a rule that has to be remembered per file
+# is one that will be forgotten.
+.githooks/** text eol=lf

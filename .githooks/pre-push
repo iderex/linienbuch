@@ -1,0 +1,18 @@
+#!/bin/sh
+# Run the whole gate before a push.
+#
+# This is a courtesy that shortens the loop and it is not the enforcement. It
+# lives in a clone's local git configuration, it is absent from a fresh clone
+# until somebody points core.hooksPath at this directory, and anybody who reads
+# this file can see the one flag that skips it. What stands behind a merge is the
+# ruleset on the default branch and the checks that run on the pull request.
+#
+# One line, and it states nothing of its own. Everything the gate does, the order
+# it does it in and what it says about the legs it did not run are in
+# src/bin/gate.rs, so this file cannot drift away from the procedure. A test in
+# that file reads this one and refuses any other command here.
+#
+# Skipping it is git push --no-verify, and it is written here rather than left to
+# be discovered, because a hook whose escape hatch is a secret is a hook people
+# work around by deleting.
+exec cargo run --locked --quiet --bin gate
