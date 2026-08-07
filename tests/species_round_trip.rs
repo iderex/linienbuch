@@ -7,7 +7,7 @@
 //! nothing downstream can notice. Rendering back and comparing to the string the
 //! source wrote is what notices.
 
-use linienbuch::species::{Convention, Element, Species, Unparseable};
+use linienbuch::spectroscopy::species::{Convention, Element, Species, Unparseable};
 
 fn atom(symbol: &str, charge: u8) -> Species {
     let element = Element::from_symbol(symbol).expect("symbol is in the element table");
