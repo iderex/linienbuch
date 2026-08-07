@@ -243,7 +243,10 @@ fn refuses_a_bind_to_every_interface() {
 #[test]
 fn the_tracked_sources_reach_nothing() {
     let root = manifest_dir();
-    let skip = vec![guard_dir().join("fixtures")];
+    let skip = vec![
+        guard_dir().join("fixtures"),
+        root.join("tests").join("integration"),
+    ];
     let mut findings = scan(&root.join("src"), &skip);
     findings.extend(scan(&root.join("tests"), &skip));
 

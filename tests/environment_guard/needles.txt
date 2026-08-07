@@ -18,3 +18,4 @@ TcpListener::bind
 UdpSocket::bind
 UdpSocket::connect
 UdpSocket::send_to
+to_socket_addrs

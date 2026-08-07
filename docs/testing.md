@@ -61,9 +61,14 @@ an entry is added when a crate that wraps a socket is added.
 The guard reads lines. A call split across two lines, or assembled from
 fragments, is not seen.
 
-The fixture directory `tests/environment_guard/fixtures/` is skipped, because it
-is where the files that violate the rule deliberately live. That is one named
-exclusion and it is the only one.
+Two directories are skipped and both are named here rather than only in the
+code. `tests/environment_guard/fixtures/` is where the files that violate the
+rule deliberately live. `tests/integration/` is the harness below, which is not
+part of the default suite and whose whole purpose is the network, so the guard's
+subject is the default suite's sources rather than every file in the tree.
+
+Those two are the whole of the exclusion list. A third would be worth arguing
+about, and there is not one.
 
 The display constraint has no mechanism. `PROSE, NOT ENFORCEMENT`, `OWED`, issue
 #50. Nothing here refuses a test that opens a window, and the reason it is not
@@ -90,12 +95,18 @@ away from it and nothing else, and the guard must not refuse it. A guard that
 refused the neighbour too would have proved only that it refuses files
 containing a socket call.
 
-None of the four is compiled or run. Cargo builds only the `.rs` files directly
-under `tests/`, and these are three directories down.
+None of the four is compiled or run. Cargo builds the `.rs` files directly under
+`tests/` and a `main.rs` one directory below it, and these four are neither: they
+sit under `tests/environment_guard/fixtures/` and none of them is named
+`main.rs`.
 
 ## How the suite is run, and what that run showed
 
     cargo test --locked
+
+The guard's own target, which is the one the rest of this section is about:
+
+    Running tests\environment_guard.rs
     test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
 The refusal, demonstrated rather than asserted. A copy of the upstream-fetching
@@ -166,3 +177,92 @@ window would need. So the suite cannot reach a display, which is the property
 the constraint is about. Whether it passes on a headless machine remains
 untested until somebody runs it on one, and that is a different sentence from
 the one above.
+
+## The integration harness
+
+Some things cannot be tested against a fixture and still mean anything. Whether
+the retrieval code reaches a source at all. Whether the format the parser expects
+is the format the server serves today. Whether a line list measured in gigabytes
+parses with the memory ceiling holding. Those are worth having and they break
+every rule above.
+
+They live in `tests/integration/`, under a name that says what they need rather
+than when they run. Not an extended suite and not a nightly, because those names
+describe a schedule and hide a dependency, and the dependency is the thing
+somebody has to decide about before running it.
+
+### It is excluded by construction
+
+`Cargo.toml` declares the target with `test = false`, so `cargo test` does not
+build it and does not run it. No filter, no attribute and no directory name is
+doing the work.
+
+That this is by construction rather than by convention is measured rather than
+supposed. Before the declaration existed, cargo auto-discovered
+`tests/integration/main.rs` as an ordinary test target and ran it with the rest,
+and the leg that opens a socket to an upstream host ran inside a `cargo test`.
+The declaration is what stopped it.
+
+### Its own command
+
+    cargo test --test integration
+
+Nothing in the merge gate runs it, and nothing in the merge gate runs cargo at
+all today:
+
+    grep -rn "cargo" .github/workflows/
+    .github/workflows/dco.yml:57:            # Trusted first-party automation authors bot commits that cannot
+
+One hit, the word inside a comment in an unrelated file. The checks are #5's and
+this harness must not be added to them: a source going down for an afternoon
+must not block unrelated work.
+
+### What each leg needs
+
+`the_first_source_host_is_reachable` needs the network. It opens one socket to an
+upstream host and closes it. It says the host is answering on that port and says
+nothing about what it would serve, which is the smaller claim and is the one it
+makes.
+
+`the_published_format_matches_what_the_server_serves` needs the network and a
+retrieval that does not exist yet. Declared and not implemented; #26 owes the
+retrieval and #27 owes the parser. Writing a second retrieval inside the harness
+to get the leg running sooner would put two retrievals in the tree, which is what
+#26 exists to stop.
+
+`a_full_line_list_parses_within_the_memory_ceiling` needs a download measured in
+gigabytes and the parser in #29. Declared and not implemented, and the ceiling it
+would assert against does not exist until there is a parser to set one on.
+
+`the_date_stamp_on_a_finding_is_a_real_date` needs nothing. It lives here because
+what it checks lives here, and it is disclosed alongside the others rather than
+quietly left out of the count.
+
+### A failure here is a finding
+
+A source that changed its format, or moved, or went away, is real information
+about the field rather than a broken test. A failing leg prints the leg name, the
+retrieval date and what came back, in a shape somebody can paste into an issue.
+
+### The absence is printed, not assumed
+
+Every default run names the legs it did not run and what each one needs:
+
+    cargo test --locked
+    test a_full_line_list_parses_within_the_memory_ceiling ... ignored, in the integration harness: needs a download measured in gigabytes and the parser in #29. Run it with: cargo test --test integration
+    test the_date_stamp_on_a_finding_is_a_real_date ... ignored, in the integration harness: not network bound, but it lives beside the code it checks. Run it with: cargo test --test integration
+    test the_first_source_host_is_reachable ... ignored, in the integration harness: needs the network, one socket to an upstream host. Run it with: cargo test --test integration
+    test the_published_format_matches_what_the_server_serves ... ignored, in the integration harness: needs the network and a retrieval that does not exist yet, #26 and #27. Run it with: cargo test --test integration
+    test result: ok. 3 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Those four lines come from `tests/integration_disclosure.rs`, which holds one
+ignored test per leg. An ignored test's reason is printed on its own line by
+every run, so a run covering less than the whole set cannot be read as one that
+covered it.
+
+The same file holds a test that compares the legs it names against the test
+functions the harness actually holds, in both directions, so the disclosure
+cannot drift away from the thing it discloses. That comparison is a function over
+sets and is proved on constructed sets as well as against the tree, because a
+comparison that has only ever seen an agreeing pair has not been shown to refuse
+anything.
