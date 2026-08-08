@@ -9,4 +9,5 @@
 //! `tests/layout.rs` is what refuses it if something starts to.
 
 pub mod accuracy;
+pub mod levels;
 pub mod species;

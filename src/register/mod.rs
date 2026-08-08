@@ -11,3 +11,4 @@
 //! rewrite.
 
 pub mod provenance;
+pub mod uncertainty;
