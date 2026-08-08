@@ -231,6 +231,39 @@ pub enum Refused {
     Cycle(Vec<ClaimId>),
 }
 
+impl Refused {
+    /// A stable name for the constraint this refusal is about.
+    ///
+    /// The match is exhaustive, so adding a variant does not compile until it is
+    /// named here, and naming it here does not pass `tests/schema_validation.rs`
+    /// until a fixture trips it. Two steps, and neither is a thing anybody can
+    /// forget quietly.
+    pub fn constraint(&self) -> &'static str {
+        match self {
+            Refused::CalibrationMissing(_) => "a calibrated claim missing one of its three parts",
+            Refused::CompiledWithNoAncestor(_) => "a compiled claim with no outgoing edge",
+            Refused::UnknownClaim(_) => "an edge from a claim the register does not hold",
+            Refused::UnknownAncestor(_) => "an edge to a claim the register does not hold",
+            Refused::ClaimContradicted(_) => "one identity holding two different claims",
+            Refused::Cycle(_) => "a cycle in the provenance graph",
+        }
+    }
+
+    /// Every constraint this type can refuse.
+    ///
+    /// A list, and the reason it is not derived is that Rust has no way to
+    /// enumerate an enum's variants. What stops it drifting is the exhaustive
+    /// match above and the coverage test that reads both.
+    pub const CONSTRAINTS: [&'static str; 6] = [
+        "a calibrated claim missing one of its three parts",
+        "a compiled claim with no outgoing edge",
+        "an edge from a claim the register does not hold",
+        "an edge to a claim the register does not hold",
+        "one identity holding two different claims",
+        "a cycle in the provenance graph",
+    ];
+}
+
 impl fmt::Display for Refused {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
