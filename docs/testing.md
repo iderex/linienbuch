@@ -240,6 +240,13 @@ to get the leg running sooner would put two retrievals in the tree, which is wha
 gigabytes and the parser in #29. Declared and not implemented, and the ceiling it
 would assert against does not exist until there is a parser to set one on.
 
+`the_target_required_set_is_covered_by_the_parity_map` needs the network and an
+authenticated `gh`. It reads the check run names the target gate requires today
+and refuses one that `docs/parity.md` does not place. It reads the live set
+rather than a copy of it kept here, which is why it needs the network at all: a
+pinned copy is the nearest thing to hand rather than the thing itself, and a map
+checked against a copy agrees with the copy for as long as the copy is stale.
+
 `the_date_stamp_on_a_finding_is_a_real_date` needs nothing. It lives here because
 what it checks lives here, and it is disclosed alongside the others rather than
 quietly left out of the count.
@@ -254,12 +261,17 @@ retrieval date and what came back, in a shape somebody can paste into an issue.
 
 Every default run names the legs it did not run and what each one needs:
 
-    cargo test --locked
+    cargo test --locked --test integration_disclosure
     test a_full_line_list_parses_within_the_memory_ceiling ... ignored, in the integration harness: needs a download measured in gigabytes and the parser in #29. Run it with: cargo test --test integration
     test the_date_stamp_on_a_finding_is_a_real_date ... ignored, in the integration harness: not network bound, but it lives beside the code it checks. Run it with: cargo test --test integration
     test the_first_source_host_is_reachable ... ignored, in the integration harness: needs the network, one socket to an upstream host. Run it with: cargo test --test integration
     test the_published_format_matches_what_the_server_serves ... ignored, in the integration harness: needs the network and a retrieval that does not exist yet, #26 and #27. Run it with: cargo test --test integration
-    test result: ok. 3 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    test the_target_required_set_is_covered_by_the_parity_map ... ignored, in the integration harness: needs the network and an authenticated gh, to read the required set docs/parity.md is placed against. Run it with: cargo test --test integration
+    test result: ok. 3 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+The command is narrowed to the one target so the lines above are the whole of its
+output. `cargo test --locked` prints the same five lines among the rest of the
+suite.
 
 Those four lines come from `tests/integration_disclosure.rs`, which holds one
 ignored test per leg. An ignored test's reason is printed on its own line by
