@@ -1,8 +1,10 @@
 # What changes when the species is a molecule
 
-Written for issue #66, which is not closed by this file. The Done-when has a
-second half about the record model and a test, and that half is blocked; the
-finding on the issue says what by.
+Written for issue #66. This file is the first half of that Done-when. The second
+half, the part of the record model that carries the reference temperature and the
+partition function identity alongside any intensity, is
+`src/spectroscopy/intensity.rs`, and `## Enforcement` below says what it refuses
+and what it does not.
 
 The atomic case shapes the schema. If the molecular case is considered only
 afterwards, the schema is wrong in a way that is expensive to fix, so the four
@@ -130,17 +132,43 @@ of #1.
 
 ## Enforcement
 
-`PROSE, NOT ENFORCEMENT`, `OWED`, issue #50 for the searchable half and #66 for
-the typed half. Nothing refuses an intensity stored without its reference
-temperature, because there is no intensity in the tree to store. The species
-identity already refuses a molecular species by name rather than accepting it as
-an atom, which is the one piece of this that a machine holds today:
+The typed half is held. `src/spectroscopy/intensity.rs` makes an intensity
+without its reference temperature, its unit and its partition function identity
+unrepresentable rather than invalid: the three are the parts of a `Convention`,
+the fields are private, and the one constructor takes all three. Two intensities
+in two conventions are refused rather than converted, and the refusal names which
+part differs.
+
+    cargo test --locked --test intensity_conventions
+    test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Eight constraints, each with a case that trips exactly it and a neighbour one
+change away that it does not trip, and a test that reds if a constraint the type
+declares has no case. What that file does not cover is printed by every run of it.
+
+The species identity refuses a molecular species by name rather than accepting it
+as an atom, which is the other piece a machine holds:
 
     cargo test --locked --test species_round_trip
     test an_unparseable_species_is_refused_with_its_reason ... ok
 
 The refusal it asserts for `H2O` is `MoreThanOneElement`, which says the input is
 a species this parser does not cover rather than nonsense, and points here.
+
+`PROSE, NOT ENFORCEMENT`, `OWED`, issue #50, for what is left. The type refuses an
+intensity built without its convention; nothing refuses a second intensity type
+appearing elsewhere in the tree, or an intensity formatted by a path that never
+went through this one. That is a search over the tree rather than a property of a
+type, and #50 is where it belongs.
+
+`PROSE, NOT ENFORCEMENT`, `TERMINAL`, for whether a recorded conversion factor is
+the right factor. The record carries which tabulation was used so a reader can go
+and check it, and nothing here evaluates a partition function. That is a judgement
+about physics, no reading of this tree makes it, and no check is owed.
+
+The molecular level identity in `## Identity` is not held by anything yet. There
+is no level record for it to be part of, which is #21, and no transition record
+for a level to be an end of, which is #22.
 
 ## The means for this file
 
