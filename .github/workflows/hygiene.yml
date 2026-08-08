@@ -1,0 +1,51 @@
+# hygiene, the check #49 names. The check-run name is the contract: a required
+# check is matched by its literal name, so this job carries the name
+# `docs/parity.md` places rather than defaulting to its job id, which is the
+# other convention in this directory and the wrong one where the name has
+# already been fixed elsewhere.
+#
+# What this leg does is not written here. It is one call into the gate command,
+# which is the same implementation the pre-push hook runs, so the two cannot
+# disagree about what a hygiene leg is. A test in `src/bin/gate.rs` reads this
+# file and refuses any cargo command in it that is not that call.
+name: hygiene
+
+on:
+  # Also on edited, because one of the rules reads the pull request body and a
+  # body corrected after a red run has to be able to turn it green.
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+# Read-only. Nothing here writes to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hygiene:
+    name: Deterministic PR-hygiene checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The whole history. The leg walks the commits the change adds, and a
+          # shallow clone does not hold the base those commits are counted from.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install the toolchain this tree pins
+        run: rustup toolchain install
+
+      - name: Run the hygiene leg of the gate
+        # The base and the body reach the program as data. Neither is
+        # interpolated into a command line, so a body written by anybody at all
+        # is read as text and never as shell.
+        env:
+          HYGIENE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HYGIENE_PR_BODY: ${{ github.event.pull_request.body }}
+        run: cargo run --locked --quiet --bin gate -- hygiene
