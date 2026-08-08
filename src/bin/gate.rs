@@ -36,13 +36,15 @@ struct Leg {
     env: &'static [(&'static str, &'static str)],
 }
 
-/// The four legs, in the order #5 names them.
+/// The legs, the first four in the order #5 names them.
 ///
-/// The four workflows are four independent files with no ordering between them,
-/// so there is no order there to copy. This is the order the issue that named
-/// the checks lists them in, and that is stated rather than presented as an
-/// order the workflows impose.
-const LEGS: [Leg; 4] = [
+/// The workflows are independent files with no ordering between them, so there
+/// is no order there to copy. The first four are the order the issue that named
+/// those checks lists them in, and that is stated rather than presented as an
+/// order the workflows impose. The fifth is #49's, and it is last because it is
+/// the only one that reads git rather than the tree, so a run that stops before
+/// it has still judged everything the tree can be judged on.
+const LEGS: [Leg; 5] = [
     Leg {
         name: "build",
         commands: &[
@@ -101,6 +103,16 @@ const LEGS: [Leg; 4] = [
                 "warnings",
             ],
         ],
+        env: &[],
+    },
+    Leg {
+        name: "hygiene",
+        // The only leg whose subject is the change rather than the tree. Its
+        // rules, its two tiers and what it does when a rule cannot be reached
+        // are in `src/bin/hygiene.rs`; nothing about them is restated here,
+        // because this file decides which legs run and not what any of them
+        // means.
+        commands: &[&["run", "--locked", "--quiet", "--bin", "hygiene"]],
         env: &[],
     },
 ];
