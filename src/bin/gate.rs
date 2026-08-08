@@ -128,7 +128,8 @@ const NOT_ASKED: [NotAsked; 6] = [
     NotAsked {
         name: "the integration harness",
         workflow: None,
-        needs: "the network, and an upstream source that is answering",
+        needs: "the network, an upstream source that is answering, and an authenticated gh \
+                for the leg that reads the target gate's required set",
         ask_with: "cargo test --test integration",
     },
     NotAsked {

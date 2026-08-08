@@ -24,8 +24,12 @@
 //! failure carries the retrieval date and what came back, in a form somebody can
 //! paste into an issue.
 
+#[path = "../parity/map.rs"]
+mod map;
+
 use std::fmt::Write as _;
 use std::net::{TcpStream, ToSocketAddrs};
+use std::process::Command;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 /// How long to wait for a host before calling it unreachable.
@@ -152,4 +156,90 @@ fn the_published_format_matches_what_the_server_serves() {
 #[ignore = "not implemented: needs the parser in #29 and a download measured in gigabytes"]
 fn a_full_line_list_parses_within_the_memory_ceiling() {
     unimplemented!("#29")
+}
+
+/// The gate `docs/parity.md` is measured against.
+const TARGET_REPOSITORY: &str = "iderex/jellyfin-plugin-sso";
+
+/// The check run names a repository's default branch requires today.
+///
+/// Read from the forge rather than from anything tracked here. A pinned copy of
+/// somebody else's required set is the nearest thing to hand rather than the
+/// thing itself, and a map checked against a copy would agree with the copy for
+/// as long as the copy was stale.
+///
+/// The subprocess is the means because the command is the one `docs/parity.md`
+/// prints, and reimplementing it here would need an HTTP client with TLS and a
+/// credential store, which is three dependencies this tree does not carry to ask
+/// a question one already-installed program answers.
+fn required_checks(repository: &str) -> Result<Vec<String>, String> {
+    let jq = ".[] | select(.type==\"required_status_checks\") \
+              | .parameters.required_status_checks[].context";
+    let output = Command::new("gh")
+        .args([
+            "api",
+            &format!("repos/{repository}/rules/branches/main"),
+            "--jq",
+            jq,
+        ])
+        .output()
+        .map_err(|e| format!("gh could not be run: {e}"))?;
+
+    if !output.status.success() {
+        return Err(format!(
+            "gh exited with {} and said: {}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+
+    Ok(String::from_utf8_lossy(&output.stdout)
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(str::to_owned)
+        .collect())
+}
+
+/// Every check the target gate requires today is placed by the parity map.
+///
+/// It needs the network, and an authenticated `gh`, which is why it is here
+/// rather than in the default suite. The other direction is deliberately not
+/// checked: the map also names checks the target does not require, which is what
+/// its dropped and non-gating rows are.
+#[test]
+fn the_target_required_set_is_covered_by_the_parity_map() {
+    let leg = "the_target_required_set_is_covered_by_the_parity_map";
+
+    let required = match required_checks(TARGET_REPOSITORY) {
+        Ok(names) => names,
+        Err(detail) => panic!("{}", finding(leg, &detail)),
+    };
+
+    // An empty answer would make the comparison below pass over nothing, which
+    // reads exactly like a map that covers everything. A target with no required
+    // checks is a real change in the thing this board copies, so it is reported
+    // rather than treated as agreement.
+    if required.is_empty() {
+        panic!(
+            "{}",
+            finding(
+                leg,
+                &format!("{TARGET_REPOSITORY} requires no status checks on its default branch")
+            )
+        );
+    }
+
+    let missing = map::unplaced(&map::parity_document(), &required);
+    assert!(
+        missing.is_empty(),
+        "{}",
+        finding(
+            leg,
+            &format!(
+                "{TARGET_REPOSITORY} requires {} check(s) that docs/parity.md does not place: {missing:?}",
+                missing.len()
+            )
+        )
+    );
 }
