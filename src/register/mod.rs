@@ -10,6 +10,7 @@
 //! this side owes is that the question can still be answered later without a
 //! rewrite.
 
+pub mod ancestry;
 pub mod claims;
 pub mod provenance;
 pub mod uncertainty;
