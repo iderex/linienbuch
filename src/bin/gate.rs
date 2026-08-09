@@ -136,7 +136,7 @@ struct NotAsked {
 /// so a workflow added later is either a leg or an entry here and cannot be
 /// silently absent from both. That comparison is what stops this disclosure from
 /// going quiet as the tree grows.
-const NOT_ASKED: [NotAsked; 6] = [
+const NOT_ASKED: [NotAsked; 7] = [
     NotAsked {
         name: "the integration harness",
         workflow: None,
@@ -175,6 +175,13 @@ const NOT_ASKED: [NotAsked; 6] = [
         workflow: Some("zizmor"),
         needs: "a tool this tree does not carry, and a network fetch to install it",
         ask_with: "open the pull request",
+    },
+    NotAsked {
+        name: "the static analysis of this board's source",
+        workflow: Some("codeql"),
+        needs: "the forge's analysis engine and the code-scanning store it writes into, \
+                neither of which is on this machine",
+        ask_with: "open the pull request, and read what it found in the code-scanning tab",
     },
 ];
 
