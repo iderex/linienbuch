@@ -139,9 +139,8 @@ That is a narrower rule than #17 anticipated, and the narrowing is the point of
 the decision above rather than a simplification. With the equivalent width out
 of the inputs, the map is linear with slope minus one, and a linear map is the
 case where an analytic propagation and a Monte Carlo agree by construction. The
-worked example this record owes therefore shows agreement, and a disagreement
-between the two would be a defect in one of them rather than a property of the
-physics.
+worked example below therefore shows agreement, and a disagreement between the
+two would be a defect in one of them rather than a property of the physics.
 
 The Monte Carlo keeps its place for two reasons that survive the narrowing. It
 is the only check that does not share an implementation with the thing it
@@ -210,28 +209,64 @@ The derived quantity itself and the two numbers it is reported with, which is
 
 ## The worked example
 
-Owed, against #37. The example is one propagation computed both ways with the
-commands that produced it, showing that the analytic and the Monte Carlo answers
-agree and that both exchange the halves of an asymmetric uncertainty.
+One claim, propagated both ways. A source quoting log gf with an asymmetric
+uncertainty, five hundredths of a dex low and twelve hundredths high, on a line
+whose six preconditions the caller has answered.
 
-It is not in this file yet because neither method exists in this tree:
+    cargo test --locked --test propagation -- --nocapture the_two_methods_agree_on_the_worked_case
+    quoted on log gf    lower 0.050000 upper 0.120000
+    analytic            lower 0.120000 upper 0.050000
+    sampled             lower 0.120107 upper 0.050158
+    sampling            200000 draws, seed 20260809
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out
 
-    git grep -n "fn propagate\|monte" -- src/ ; echo "exit=$?"
-    exit=1
+The two agree, which is what this record predicted once the equivalent width
+left the inputs, and it is worth being clear about what that agreement is and is
+not. It is not evidence that the derivative is minus one. A linear map is the
+case where an analytic propagation and a Monte Carlo cannot disagree, so what
+this example shows is that both implementations carry out the same linear map
+and that neither dropped the exchange of the halves. The derivative itself
+rests on the derivation above and on nothing that was run.
 
-A worked example written before them would be arithmetic over numbers chosen to
-produce the result it demonstrates, carrying commands that run nothing. #17 stays
-open until the example is here, and this is the clause it stays open on.
+The exchange is the part the example is for. The lower half of the answer is the
+upper half of the input, not the lower one, and the sampled route arrives there
+without borrowing the analytic route's arithmetic: it draws, maps each draw
+through the derivative and recovers the halves from the sample afterwards.
+
+The sampled numbers sit nine parts in ten thousand from the exact lower half
+and three parts in a thousand from the exact upper one, which is the sampling
+error of the draw count rather than a disagreement. The tolerance the
+suite holds is three per cent, and the smaller side of this case carries about
+three parts in a thousand, so the band is about ten times the noise. A seed and a
+draw count fix every digit above, so the numbers are reproducible rather than
+merely repeatable.
+
+What this example does not contain is a real line. There is no oscillator
+strength in this tree to take one from, and a constructed pair of halves is what
+the arithmetic can honestly be shown on today. When the first source is ingested
+the same command runs against a value somebody published, and the number that
+changes is the input rather than the rule.
 
 ## Enforcement
 
-`PROSE, NOT ENFORCEMENT`, `OWED`, issue #37 for the refusals and #53 for the
-proof that each of them bites. Nothing in this tree propagates anything today, so
-no check refuses a propagation that skipped the exception check, carried an
-absent uncertainty into arithmetic, or exchanged the halves the wrong way. #37 is
-where each of those becomes a refusal site with a fixture, and the fixture worth
-writing for the last one is the near miss: a symmetric uncertainty, where an
-unswapped implementation and a correct one produce the same bytes.
+The refusals are standing. `src/spectroscopy/propagation.rs` refuses a
+propagation whose preconditions are not all answered, one whose preconditions
+were answered as not holding, an absent uncertainty on either route, and a
+sampled run asked for no draws. `tests/propagation.rs` carries a case per
+refusal, each fixture answering five preconditions and differing from a
+propagating one by a single answer, and the pull request that landed them has
+each site deleted with the tests that reddened.
+
+`PROSE, NOT ENFORCEMENT`, `OWED`, issue #53 for the part that outlasts a
+transcript. A deletion proof is evidence about the day somebody ran it. Nothing
+in this tree connects those refusal sites to those fixtures afterwards, so an
+arm that stops refusing stays green until a reader notices, and #53 is the issue
+that ends that state.
+
+The near miss is in the suite rather than only in this paragraph. A symmetric
+uncertainty is the fixture an implementation that forgot the exchange passes,
+for every value, which is why the case both routes are compared on is the
+asymmetric one.
 
 ## The means for this file
 
