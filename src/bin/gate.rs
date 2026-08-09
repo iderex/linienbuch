@@ -41,10 +41,11 @@ struct Leg {
 /// The workflows are independent files with no ordering between them, so there
 /// is no order there to copy. The first four are the order the issue that named
 /// those checks lists them in, and that is stated rather than presented as an
-/// order the workflows impose. The fifth is #49's, and it is last because it is
-/// the only one that reads git rather than the tree, so a run that stops before
-/// it has still judged everything the tree can be judged on.
-const LEGS: [Leg; 5] = [
+/// order the workflows impose. The fifth is #50's and judges the tree like the
+/// four before it. The sixth is #49's, and it is last because its subject is the
+/// change rather than the tree, so a run that stops before it has still judged
+/// everything the tree can be judged on.
+const LEGS: [Leg; 6] = [
     Leg {
         name: "build",
         commands: &[
@@ -103,6 +104,15 @@ const LEGS: [Leg; 5] = [
                 "warnings",
             ],
         ],
+        env: &[],
+    },
+    Leg {
+        name: "invariants",
+        // The searches that either match or do not. Which invariants it carries,
+        // which are held elsewhere and which are still waiting are printed by
+        // that program and are not restated here, for the same reason no leg's
+        // meaning is restated here.
+        commands: &[&["run", "--locked", "--quiet", "--bin", "invariants"]],
         env: &[],
     },
     Leg {

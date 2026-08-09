@@ -1,0 +1,42 @@
+# invariants, the check #50 names. The check-run name is the contract: a
+# required check is matched by its literal name, and `docs/parity.md` has
+# already fixed this one, so the job carries that name rather than defaulting to
+# its job id.
+#
+# What this leg does is not written here. It is one call into the gate command,
+# which is the same implementation the pre-push hook runs, so the two cannot
+# disagree about what an invariants leg is. A test in `src/bin/gate.rs` reads
+# this file and refuses any cargo command in it that is not that call.
+name: invariants
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main]
+
+# Read-only. The leg searches the tracked tree and writes nothing.
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  invariants:
+    name: Enforce greppable invariants
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # No step pushes, so do not leave the token in .git/config.
+          persist-credentials: false
+
+      - name: Install the toolchain this tree pins
+        run: rustup toolchain install
+
+      - name: Run the invariants leg of the gate
+        run: cargo run --locked --quiet --bin gate -- invariants
