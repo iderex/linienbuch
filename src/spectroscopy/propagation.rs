@@ -344,3 +344,65 @@ impl Stream {
         (radius * angle.cos()).abs()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The first draws of one seed, pasted from a run.
+    ///
+    /// `docs/decisions/propagation.md` says a seed and a draw count fix every
+    /// digit of its worked example, and until this case nothing held that. The
+    /// comparison in `tests/propagation.rs` reads two conditional second
+    /// moments out of the sample, and a stream whose mixing arithmetic changed
+    /// still produces the same two moments. Measured rather than supposed, by
+    /// seeding faults into this file for #41.
+    #[test]
+    fn the_stream_is_the_one_the_record_promises() {
+        let mut stream = Stream::seeded(20_260_809);
+        let drawn: Vec<f64> = (0..4).map(|_| stream.half_normal()).collect();
+        let shown: Vec<String> = drawn.iter().map(|one| format!("{one:.9}")).collect();
+        assert_eq!(
+            shown,
+            ["0.749817072", "0.062123399", "0.086027397", "0.034995640"]
+        );
+    }
+
+    /// The magnitudes have the shape they are meant to have.
+    ///
+    /// The case above pins the arithmetic and would pass over a constant stream
+    /// if the constant were the pasted one. This is the half that says the
+    /// magnitudes are a standard normal's, against two published numbers rather
+    /// than against another implementation in this tree: the mean magnitude is
+    /// the square root of two over pi, and just under a third of draws exceed
+    /// one.
+    ///
+    /// Replacing the whole draw with a constant is what a seeded fault found
+    /// surviving, and it survived because a point mass at a width carries the
+    /// same second moment as a normal of that width.
+    #[test]
+    fn the_magnitudes_are_those_of_a_standard_normal() {
+        const DRAWS: usize = 200_000;
+        let mut stream = Stream::seeded(20_260_809);
+        let mut total = 0.0;
+        let mut beyond_one = 0usize;
+        for _ in 0..DRAWS {
+            let magnitude = stream.half_normal();
+            assert!(magnitude >= 0.0, "a magnitude is never negative");
+            total += magnitude;
+            if magnitude > 1.0 {
+                beyond_one += 1;
+            }
+        }
+
+        let mean = total / DRAWS as f64;
+        let published = (2.0 / std::f64::consts::PI).sqrt();
+        assert!(
+            (mean - published).abs() < 0.01,
+            "the mean magnitude is {mean}, against {published}"
+        );
+
+        let share = beyond_one as f64 / DRAWS as f64;
+        assert!((share - 0.317_310_5).abs() < 0.01, "the share is {share}");
+    }
+}
