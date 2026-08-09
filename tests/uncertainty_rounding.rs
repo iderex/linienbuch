@@ -236,6 +236,70 @@ fn a_width_of_zero_leaves_the_value_where_it_was() {
     assert_eq!(rendered.plus(), Some("0.012"));
 }
 
+/// A negative value keeps its sign.
+///
+/// The route with no uncertainty to stop at, which is the one nothing else in
+/// this file reaches with a negative number. Dropping the sign here would
+/// report a value on the other side of zero, and every assertion above would
+/// still pass, because every value above is positive. Found by seeding faults
+/// into the sign handling for #41.
+#[test]
+fn a_negative_value_with_no_uncertainty_keeps_its_sign() {
+    let rendered = render(-1.5, Uncertainty::Absent).expect("a finite value renders");
+    assert_eq!(rendered.value(), "-1.5");
+    assert_eq!(rendered.to_string(), "-1.5 (no uncertainty quoted)");
+}
+
+/// A negative value that rounds to zero is shown as zero and not as minus zero.
+///
+/// The sign is suppressed when nothing of the number survives the rounding,
+/// because a minus sign in front of a zero reads as a measurement that came out
+/// just below zero rather than as one the uncertainty swallowed. This is the
+/// only case in this file where the value and its sign disagree about whether
+/// there is anything left.
+#[test]
+fn a_negative_value_that_rounds_away_is_not_shown_as_minus_zero() {
+    let rendered = render(-0.006, quoted(10.0)).expect("a finite value renders");
+    assert_eq!(rendered.value(), "0");
+    assert_eq!(rendered.to_string(), "0 +/- 10");
+
+    // The rendering carries the two halves, so it is not an absent one. Nothing
+    // else here says so, and a rendering that reported itself absent would put
+    // "no uncertainty quoted" in front of a reader who was given one.
+    assert!(!rendered.is_absent());
+    assert_eq!(rendered.minus(), Some("10"));
+    assert_eq!(rendered.plus(), Some("10"));
+}
+
+/// A value lying entirely below the place it is rounded to goes to zero.
+///
+/// Nothing of the number reaches the last place that is kept, so there is no
+/// digit to round on and the leading digit is not one. A rounding that read the
+/// leading digit here would report `1` for a number two decades below the place
+/// it was asked for, which is a plausible answer rather than an obviously wrong
+/// one.
+#[test]
+fn a_value_below_the_place_it_is_rounded_to_is_zero() {
+    let rendered = render(0.006, quoted(10.0)).expect("a finite value renders");
+    assert_eq!(rendered.value(), "0");
+}
+
+/// A value one place below rounds to nearest on its own leading digit.
+///
+/// The neighbour of the case above, one decade higher, and the pair is the
+/// point: `0.6` at the units place is `1` and `0.006` at the units place is
+/// `0`. Both go through the branch where no digit is kept, and the two answers
+/// differ, so a rounding that treats them alike is wrong on one of them
+/// whichever way it decides.
+#[test]
+fn a_value_one_place_below_rounds_on_its_leading_digit() {
+    let rendered = render(0.6, quoted(10.0)).expect("a finite value renders");
+    assert_eq!(rendered.value(), "1");
+
+    let below_the_half = render(0.4, quoted(10.0)).expect("a finite value renders");
+    assert_eq!(below_the_half.value(), "0");
+}
+
 /// A value that is not a number has no rendering, rather than one that reads
 /// like a measurement.
 #[test]
