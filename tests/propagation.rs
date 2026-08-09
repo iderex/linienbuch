@@ -239,6 +239,37 @@ fn the_sampled_route_is_deterministic_in_its_seed() {
     assert_ne!(once, elsewhere);
 }
 
+/// The worked case's sampled answer, pasted from a run rather than compared to
+/// the analytic one.
+///
+/// The comparison above reads the two conditional root mean squares and nothing
+/// else, and neither of them depends on how the draws were split between the
+/// two sides: only the sampling error of each does. So the split can be wrong by
+/// a factor of thirty and the comparison still passes inside its tolerance.
+/// Measured rather than supposed, by seeding that fault for #41: turning the
+/// share into a product moved the answer to 0.120199 and 0.049480, which is
+/// inside the three per cent the case above allows.
+///
+/// Six decimals rather than every digit, and that is a deliberate bound. Which
+/// side a draw lands on is decided by integer arithmetic and an exact division,
+/// so it is the same on every platform; the magnitudes go through `ln` and
+/// `cos`, which are not required to be correctly rounded and may differ in the
+/// last place between one library and another. Six decimals is far above that
+/// and far below the change any wrong split produces.
+#[test]
+fn the_worked_case_samples_the_numbers_the_record_quotes() {
+    let established = everything_established();
+    let (lower, upper) = halves_of(
+        monte_carlo(quoted(0.05, 0.12), &established, DRAWS, SEED)
+            .expect("everything is established"),
+    );
+
+    assert_eq!(
+        [format!("{lower:.6}"), format!("{upper:.6}")],
+        ["0.120107".to_owned(), "0.050158".to_owned()]
+    );
+}
+
 /// A one-sided uncertainty is the case where the exchange is visible without
 /// arithmetic, and it is where an empty side of the sample is legitimate.
 #[test]

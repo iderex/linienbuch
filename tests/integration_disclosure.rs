@@ -19,10 +19,11 @@ use std::path::PathBuf;
 
 /// The legs the harness holds, named here so the disclosure and the harness can
 /// be compared. Adding a leg to one and not the other reds the suite.
-const LEGS: [&str; 5] = [
+const LEGS: [&str; 6] = [
     "a_full_line_list_parses_within_the_memory_ceiling",
     "the_date_stamp_on_a_finding_is_a_real_date",
     "the_first_source_host_is_reachable",
+    "the_mutation_run_kills_everything_the_register_does_not_accept",
     "the_published_format_matches_what_the_server_serves",
     "the_target_required_set_is_covered_by_the_parity_map",
 ];
@@ -54,6 +55,12 @@ fn the_date_stamp_on_a_finding_is_a_real_date() {
 #[test]
 #[ignore = "in the integration harness: needs the network and an authenticated gh, to read the required set docs/parity.md is placed against. Run it with: cargo test --test integration"]
 fn the_target_required_set_is_covered_by_the_parity_map() {
+    unreachable!("this is a disclosure, the leg is in tests/integration/main.rs")
+}
+
+#[test]
+#[ignore = "in the integration harness: needs cargo-mutants at the version tests/mutation/register.txt pins, which is not part of the pinned toolchain, and rebuilds and re-runs the suite once per mutant, which is minutes. It never gates a merge. Run it with: cargo test --test integration"]
+fn the_mutation_run_kills_everything_the_register_does_not_accept() {
     unreachable!("this is a disclosure, the leg is in tests/integration/main.rs")
 }
 

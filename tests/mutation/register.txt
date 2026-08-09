@@ -1,0 +1,78 @@
+# The mutation run this repository is judged by.
+#
+# The tool, the version it has to be, the files it covers, and every mutant that
+# survives the suite with a reason and a retirement condition beside it.
+#
+# The version is here because nothing else in this tree holds it.
+# rust-toolchain.toml pins the compiler and says in its own comment that it pins
+# nothing else, so before this file a run depended on whatever the machine
+# happened to have installed. Two runs of one commit under two versions of the
+# tool are runs of different things, and the entries below are a statement about
+# the version on the line above them.
+#
+# The scope is the conversion and propagation core. It is where a wrong answer
+# is plausible and therefore invisible, and it is where line coverage is
+# complete and means nothing, because these functions are short and arithmetic
+# and any test that calls one executes all of it.
+#
+# src/register/ancestry.rs is deliberately absent. The marginalisation is #38
+# and has not landed, so there is no arithmetic there to seed a fault into, only
+# the refusal that tests/shared_ancestry.rs already exercises.
+#
+# An entry here is a debt and not a dispensation. Because says why no test kills
+# the mutant; Retired-by says what would remove the entry. The comparison runs
+# in both directions, so an entry for a mutant the suite has started killing is
+# refused as well, and cannot sit here claiming the tree still cannot kill it.
+
+Tool: cargo-mutants
+Version: 27.1.0
+
+Scope: src/register/uncertainty.rs
+Scope: src/register/rounding.rs
+Scope: src/spectroscopy/accuracy.rs
+Scope: src/spectroscopy/propagation.rs
+
+# Six of the ten below agree with the unmutated code on every input the type
+# admits, so no test could kill them and none is owed. Four are reachable only
+# through the sampler's private stream, and one retirement condition covers all
+# four: a route by which a case supplies the draws instead of a seed.
+
+Accepted: src/register/rounding.rs:270:15: replace < with <= in place
+Because: the sign is written only when the rounded decimal is not zero, and the decimal is built from the absolute value, so a number equal to zero always rounds to zero and the second operand removes the sign whichever comparison the first one used. The two spellings agree on every finite input.
+Retired-by: a route by which `place` can be reached with a value of zero whose rounded decimal is not zero, which its own first line rules out today.
+
+Accepted: src/register/rounding.rs:282:15: replace < with <= in shortest
+Because: the same shape one function further down. `shortest` builds its decimal from the absolute value as well, so zero is always the zero decimal and the sign is suppressed for it under both comparisons.
+Retired-by: the same condition as the entry above, for `shortest`.
+
+Accepted: src/spectroscopy/propagation.rs:134:9: replace Conditions::nothing_established -> Self with Default::default()
+Because: `Self::default()` is the body of the function. The mutant is the code it replaced.
+Retired-by: nothing. It retires if the constructor ever does something other than take the default, and it should not: the default for an unanswered precondition is the state that refuses, which is what makes this constructor safe.
+
+Accepted: src/spectroscopy/propagation.rs:222:35: replace * with / in analytic
+Because: the factor is `DERIVATIVE.abs()` and `DERIVATIVE` is exactly minus one, so the factor is exactly one and multiplying by it and dividing by it are the same operation on every f64, the infinities and the not-a-numbers included.
+Retired-by: a derivative whose magnitude is not one. That would be a change to the record the constant comes from rather than to this file, and it retires both halves of this pair at once.
+
+Accepted: src/spectroscopy/propagation.rs:222:54: replace * with / in analytic
+Because: the other half of the same expression, for the same reason.
+Retired-by: the same condition as the entry above.
+
+Accepted: src/spectroscopy/propagation.rs:253:32: replace > with >= in monte_carlo
+Because: the two differ only when the width is zero, and there the mutant divides zero by zero. The share becomes not-a-number, every comparison against it is false, so every draw takes the branch it took when the share was zero, and both halves of the input are zero there anyway. The answers agree.
+Retired-by: nothing while both halves of an uncertainty are non-negative, which `Uncertainty::asymmetric` refuses to construct otherwise.
+
+Accepted: src/spectroscopy/propagation.rs:261:29: replace < with <= in monte_carlo
+Because: the two differ only on a draw that equals the share exactly. A draw is an odd multiple of two to the minus fifty-four, so a share that is any other dyadic rational can never be hit, and reaching a share that is such a multiple needs a chosen draw rather than a seed.
+Retired-by: a route by which a case supplies the stream's draws, which would let the equal draw be presented rather than waited for.
+
+Accepted: src/spectroscopy/propagation.rs:267:20: replace < with <= in monte_carlo
+Because: the two differ only on a carried value of exactly zero, which needs a drawn magnitude of exactly zero, which needs the cosine of a drawn angle to be exactly zero. No draw reaches it. Where both halves of the input are zero the mutant pushes minus zero into a sample whose root mean square is then zero, which is the answer the empty sample gives.
+Retired-by: the same condition as the entry above.
+
+Accepted: src/spectroscopy/propagation.rs:269:27: replace > with >= in monte_carlo
+Because: the other side of the same test, for the same reason.
+Retired-by: the same condition as the entry above.
+
+Accepted: src/spectroscopy/propagation.rs:337:37: replace + with - in Stream::unit
+Because: it moves every draw by one part in two to the fifty-three, which no assertion in this tree resolves, and it changes behaviour only on the draw whose mixed output is below two to the eleventh. There the unit falls below zero and the logarithm after it is not a number. No run of any length reaches that draw.
+Retired-by: a case that drives the stream to the state whose next output is below two to the eleventh. The mixing function is a bijection, so that state can be computed by inverting it rather than searched for.
