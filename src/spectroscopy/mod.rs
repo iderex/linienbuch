@@ -11,4 +11,5 @@
 pub mod accuracy;
 pub mod intensity;
 pub mod levels;
+pub mod propagation;
 pub mod species;
