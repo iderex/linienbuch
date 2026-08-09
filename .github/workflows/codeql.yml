@@ -1,0 +1,63 @@
+# Static analysis of this board's own source, decided for issue #52.
+#
+# The route is the tracked workflow rather than the forge's default setup. Both
+# run the same analysis; only one of them is a file somebody can read in the
+# clone, and a gate that lives in repository settings is a gate nobody can
+# review in a pull request.
+#
+# The check-run name is the contract. `docs/parity.md` places the target gate's
+# rows by literal name, so the workflow is named for the target's row and the
+# job produces `Analyze (rust)` through the matrix, which is the language
+# specific row's equivalent here.
+#
+# No cargo command appears below and none is wanted. The extractor reads the
+# sources without building them, which is why `build-mode: none` is set rather
+# than left to a default. A cargo line here would also be a second procedure
+# beside the gate command, which a test in `src/bin/gate.rs` refuses.
+name: CodeQL
+
+on:
+  pull_request:
+    branches: ["**"]
+  push:
+    branches: [main]
+
+# Explicit deny-all at workflow level; the job below grants only what it needs.
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write # upload the results into the code-scanning tab
+      contents: read # checkout the sources to scan
+    strategy:
+      # One language today. A matrix rather than a bare job because the job name
+      # above is what the required set would match, and it has to keep saying
+      # which language it analysed on the day a second one arrives.
+      fail-fast: false
+      matrix:
+        language: [rust]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # No step pushes, so do not leave the token in .git/config.
+          persist-credentials: false
+
+      - name: Initialise CodeQL
+        uses: github/codeql-action/init@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+
+      - name: Analyse
+        uses: github/codeql-action/analyze@e4fba868fa4b1b91e1fdab776edc8cfbe6e9fb81 # v4.37.3
+        with:
+          category: /language:${{ matrix.language }}
