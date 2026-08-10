@@ -8,6 +8,12 @@ that depends on it exists.
 
 See [NOTICE.md](NOTICE.md) for the intended-use notice.
 
+## Data protection
+
+Nothing this program holds leaves the machine it runs on. The register, the query history, the operator's identity and the subject of their work all stay on the host, and there is no telemetry, no usage reporting, no update check and no error submission, neither as a default nor as an option. The one kind of outbound traffic this board intends is the retrieval of upstream data, and it happens when the operator asks for it.
+
+See [docs/data-protection.md](docs/data-protection.md) for the statement in full. It says which mechanism backs which sentence and which sentences nothing backs yet.
+
 ## License
 
 This repository is under the GNU Affero General Public License version 3, copyright 2026 Nils Lehnen.
