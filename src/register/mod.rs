@@ -12,6 +12,7 @@
 
 pub mod ancestry;
 pub mod claims;
+pub mod marginalisation;
 pub mod provenance;
 pub mod rounding;
 pub mod uncertainty;

@@ -161,6 +161,72 @@ pub enum Method {
     Compiled,
 }
 
+/// A method with what distinguishes one instance of it from another removed.
+///
+/// [`Method::Computed`] carries the code and the approximation, and
+/// [`Method::Calibrated`] carries three fields, so neither can be compared or
+/// held in a table as it stands. What a weighting weights by is the category
+/// rather than the instance, and this is that category with nothing else on it.
+///
+/// The map below is exhaustive, so a category added to [`Method`] does not
+/// compile until it has one here, and [`MethodClass::ALL`] is what every table
+/// over the categories is checked for completeness against.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum MethodClass {
+    MeasuredInLaboratory,
+    Computed,
+    SemiEmpirical,
+    Calibrated,
+    Compiled,
+}
+
+impl MethodClass {
+    /// Every category, in the order [`Method`] declares them.
+    pub const ALL: [MethodClass; 5] = [
+        MethodClass::MeasuredInLaboratory,
+        MethodClass::Computed,
+        MethodClass::SemiEmpirical,
+        MethodClass::Calibrated,
+        MethodClass::Compiled,
+    ];
+
+    /// Where this category sits in [`MethodClass::ALL`].
+    pub fn at(self) -> usize {
+        match self {
+            MethodClass::MeasuredInLaboratory => 0,
+            MethodClass::Computed => 1,
+            MethodClass::SemiEmpirical => 2,
+            MethodClass::Calibrated => 3,
+            MethodClass::Compiled => 4,
+        }
+    }
+}
+
+impl fmt::Display for MethodClass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            MethodClass::MeasuredInLaboratory => "measured in a laboratory",
+            MethodClass::Computed => "computed",
+            MethodClass::SemiEmpirical => "semi-empirical",
+            MethodClass::Calibrated => "calibrated against a reference object",
+            MethodClass::Compiled => "compiled from somebody else",
+        })
+    }
+}
+
+impl Method {
+    /// Which category this method is in.
+    pub fn class(&self) -> MethodClass {
+        match self {
+            Method::MeasuredInLaboratory => MethodClass::MeasuredInLaboratory,
+            Method::Computed { .. } => MethodClass::Computed,
+            Method::SemiEmpirical => MethodClass::SemiEmpirical,
+            Method::Calibrated(_) => MethodClass::Calibrated,
+            Method::Compiled => MethodClass::Compiled,
+        }
+    }
+}
+
 /// What kind of derivation an edge is.
 ///
 /// Typed so that a straight quotation, a unit conversion, a renormalisation and
