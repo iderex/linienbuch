@@ -12,7 +12,11 @@ the day it ran. Issue #4 owns the pin, the lock and the demonstration that two
 builds agree; this file owns the choice, not its proof.
 
 No second language is added to the core. Whether a Python facing binding is
-added beside it is entry 3 of #1 and is not settled here.
+added beside it is entry 3 of #1, answered there for the first release: none.
+The route into Python is the register file and the export beside it, which
+`docs/decisions/storage.md` already names, rather than a set of function calls.
+What that costs is named with it: the answer logic, the profile and the refusal,
+reaches a Python caller only through the command.
 
 The version this decision was made against:
 

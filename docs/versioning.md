@@ -23,10 +23,12 @@ The letter scale it converts is published by the source; the number it converts
 into is this board's, and moving it moves every uncertainty derived from a
 graded value.
 
-A change to the default weighting when several sources are marginalised over,
-which is entry 7 of #1 and is open. The issue that raised it says why it is not
-an implementation detail: a uniform weight and an inverse-variance weight are
-different answers to the same question.
+A change to the default weighting when several sources are marginalised over.
+Entry 7 of #1 answers its shape, a weight by the category of the method with
+every claim inside one category weighing the same, and leaves the number each
+category carries unset. The issue that raised it says why neither half is an
+implementation detail: a uniform weight and an inverse-variance weight are
+different answers to the same question, and so are two tables under one shape.
 
 A scheme that versions only interfaces tells the person who upgraded and got a
 different number nothing at all. This one is built so that the number tells them
@@ -157,12 +159,15 @@ where a wrong answer is caught. That is the same state
 
 ## What this does not decide
 
-The default weighting itself, which is entry 7 of #1 and is open. This file says
-what a change to it costs once it exists, which is the right way round: the cost
-can be agreed before the answer is.
+The default weighting itself. Entry 7 of #1 has answered its shape and not the
+numbers under it, so there is still nothing here to version. This file says what
+a change to it costs once it exists, which is the right way round: the cost can
+be agreed before the answer is.
 
 How a release is cut, tagged and published, and what its notes carry beyond the
 snapshot identities. That is #61.
 
-What the package and the command are called. The manifest's name is not an
-answer to that, and entry 9 of #1 is open.
+What the package is called. Entry 9 of #1 answers the command, which is
+`linienbuch`, with the repository, the package and the command kept as one name.
+The manifest still carries its own comment saying the name there answers
+nothing, and that comment is not repaired here.

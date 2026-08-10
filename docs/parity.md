@@ -235,5 +235,11 @@ because those are what the map is placed against. The name each check reports
 here is decided where that check is built, and #48 is where the two are made to
 agree.
 
-Whether any row's check is worth its runner cost on paid infrastructure, which is
-entry 8 of #1 and is open.
+Nothing about runner cost. Entry 8 of #1 is answered and closed there: every
+workflow in this tree runs on the standard runner, this repository is public, and
+no run is billed. It becomes a decision again on the day a run leaves
+`ubuntu-latest`, and that is the trigger rather than a review date.
+
+What the answer rules out belongs beside it. A leg that reads a multi-gigabyte
+upstream file has to fit the standard runner's time and memory, or it is not a
+leg of this gate.
