@@ -121,10 +121,13 @@ unless the board has ingested and matched all of them; it is a pinned snapshot
 that an ingest reads. What the register holds is what the board has actually
 matched and can say something about.
 
-Whether any upstream file is carried in this repository at all is entry 2 of #1
-and is the maintainer's. This decision is compatible with all three postures
-there, because none of them changes what the register holds; they change where
-the snapshot lives.
+Whether any upstream file is carried in this repository at all is entry 2 of #1,
+answered there: a curated extract may be tracked only where the upstream gives
+explicit permission to redistribute it, and bytes derived from a share-alike
+licence stay out whatever else is true of them. Being publicly retrievable is
+not a permission. This decision is compatible with that and with the postures it
+leaves standing, because none of them changes what the register holds; they
+change where the snapshot lives.
 
 ## The tools an operator can open the register with
 

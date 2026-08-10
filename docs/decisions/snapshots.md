@@ -103,10 +103,12 @@ established until there is a retrieval that produced it.
 
 Which sources are pinned and in what order, which is #26 and #65.
 
-Where the retrieved bytes live, whether this repository carries any of them, and
-under what terms. That is entry 2 of #1 and is the maintainer's. This decision is
-about the identity of a retrieval and holds whichever way that is answered: a
-digest identifies a retrieval whether the bytes sit in a local store, in this
-tree, or nowhere at all.
+Where the retrieved bytes live. Entry 2 of #1 answers what this repository may
+carry: an extract only where the upstream gives explicit permission to
+redistribute it, and never bytes derived from a share-alike licence. Which
+posture each source takes under that is #55. This decision is about the identity
+of a retrieval and holds whichever way a source lands: a digest identifies a
+retrieval whether the bytes sit in a local store, in this tree, or nowhere at
+all.
 
 How two snapshots of one source are compared, which is #34's measurement.

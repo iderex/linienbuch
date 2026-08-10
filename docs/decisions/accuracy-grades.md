@@ -91,8 +91,11 @@ is a lower bound on the true uncertainty rather than an estimate of it, and it i
 marked as such. A value marked that way may not be used to weight a
 marginalisation. Weighting by an uncertainty that is only a lower bound rewards
 whoever said least about their own error, which is the direction this board
-exists to push against. The weighting itself is entry 7 of #1 and is not decided
-here; what is decided here is that this value is not eligible for it.
+exists to push against. The weighting itself is entry 7 of #1, answered there in
+its shape: a weight by the category of the method, with every claim inside one
+category weighing the same. The number each category carries is a table no file
+in this tree holds yet. What is decided here is that this value is not eligible
+for the weighting, whatever those numbers turn out to be.
 
 The prime is never silently dropped. The parser refuses a suffix it does not
 recognise rather than ignoring it, so a spelling it has not been taught reds the

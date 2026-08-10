@@ -50,8 +50,9 @@ not use it unchanged. The scale is domain data; the representation it converts
 into is not, and the two live apart.
 
 `src/main.rs` is on neither side. It is the binary target, which exists so that
-there is a release artefact to build twice and compare. What the command does,
-and what it is called, are #9 and entry 9 of #1.
+there is a release artefact to build twice and compare. What the command does is
+#9. What it is called is entry 9 of #1, answered there: the command is
+`linienbuch`, and the repository, the package and the command stay one name.
 
 `src/bin/gate.rs` is on neither side. It is a development tool that runs the
 checks, and it is not part of the library at all.
@@ -66,9 +67,14 @@ the gate, and none of them is on either side of this boundary.
 
 ## Where the generic part eventually lives
 
-Not decided here. Whether it stays a module in this repository, is published from
-here as a package that four other projects depend on, or moves to a repository of
-its own is entry 4 of #1 and is open.
+Not decided here, and answered on #1 as entry 4. It stays a module in this
+repository, and it is lifted out when a second board needs the same core rather
+than on a date. The trigger is the answer rather than a deferral of one.
+
+Publishing it from here as a package four other projects depend on is what that
+refuses. From the first import by anything outside this tree the boundary is
+public and no longer movable, and the licence on a library is a decision every
+dependent has to make for itself.
 
 This decision requires only that the question can still be answered later without
 a rewrite. That is what the boundary buys and it is the whole of what is being

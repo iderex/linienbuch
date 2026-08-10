@@ -51,10 +51,11 @@ An answer produced without a profile says so in the same place. That is a
 different statement from an answer produced under a profile that happened to
 apply no rule, and the two are not spelled the same way.
 
-The board ships no profile as the default unless the maintainer decides
-otherwise, which is entry 5 of #1 and is not settled here. What this decision
-fixes is that whichever way that goes, a preference is a citable object rather
-than a behaviour.
+The board ships no profile as the default. That is entry 5 of #1, answered
+there: none is shipped, and where no profile is named the command refuses rather
+than answering. The refusal is a shape this file already defines, so nothing new
+has to be built to carry the answer. What this decision fixes is the half that
+holds either way: a preference is a citable object rather than a behaviour.
 
 ## The refusal case
 
@@ -101,7 +102,8 @@ makes it, and marking it changes nothing. `PROSE, NOT ENFORCEMENT`, `TERMINAL`.
 
 ## What this does not decide
 
-Which source wins, and whether any profile is the default. Entry 5 of #1.
+Which source wins. Whether any profile is the default is entry 5 of #1 and is
+answered, which the paragraph above carries rather than leaving here.
 
 The weighting used when claims are marginalised rather than selected between.
 Entry 7 of #1, and a weighting is not a profile: one combines claims and the
