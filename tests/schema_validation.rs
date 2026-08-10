@@ -13,8 +13,8 @@
 //! constraint has no case. Adding a variant to `Refused` does not compile until
 //! it is named, and naming it does not pass until a fixture reaches it.
 //!
-//! What this file does not cover is stated at the end and is not left to be
-//! discovered.
+//! Where every constraint the record-model milestone names is held is stated at
+//! the end, placement by placement, and is not left to be discovered.
 
 use linienbuch::register::claims::{
     Ancestor, Calibration, Claim, Claims, Derivation, Edge, Method, QuantityId, Refused, SubjectId,
@@ -356,37 +356,162 @@ fn the_declared_list_holds_what_the_match_returns() {
     }
 }
 
-/// What this file does not cover, printed by every run rather than left to be
-/// discovered by whoever assumed a green run meant the whole list.
+/// Where one constraint of the record-model milestone is held.
 ///
-/// #25 names constraints across the whole record-model milestone. Three of them
-/// have no record to be a constraint on yet, and a case for one of those would
-/// be a case against a type nobody has written.
+/// Three placements, and they are three different statements rather than three
+/// spellings of covered. A case in this file is a fixture that trips the
+/// constraint and a neighbour that does not. By construction means the value
+/// that would violate it does not compile, so no fixture can reach it and none
+/// is owed. Elsewhere means a named file carries the pair, and naming that file
+/// is what stops its absence from this one being read as its absence from the
+/// suite.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Held {
+    /// By a case above, which trips the constraint named here.
+    Here(&'static str),
+    /// By the compiler, with the refusal it answers with.
+    ByConstruction(&'static str),
+    /// By a file that is not this one.
+    Elsewhere(&'static str),
+}
+
+/// Every constraint #25 lists, in its words, and where it is held.
+///
+/// The left column is the milestone's wording and the right is this tree's, and
+/// they differ where the register calls a thing something narrower. Keeping both
+/// is the point: a reader comparing this file against the issue has to be able
+/// to find the row, and the test below compares the right column against what
+/// the cases actually tripped.
+const MILESTONE: [(&str, Held); 8] = [
+    (
+        "a claim without a snapshot",
+        Held::ByConstruction(
+            "the snapshot is a field of Claim with no default, so a claim without one \
+             does not compile",
+        ),
+    ),
+    (
+        "a claim whose method is compiled and which has no provenance edge",
+        Held::Here("a compiled claim with no outgoing edge"),
+    ),
+    (
+        "a cycle in the provenance graph",
+        Held::Here("a cycle in the provenance graph"),
+    ),
+    (
+        "a species that does not parse into canonical form",
+        Held::Elsewhere(
+            "tests/species_round_trip.rs, which owns the parser and carries each refusal \
+             with the neighbour one change away from it",
+        ),
+    ),
+    (
+        "a transition missing a level",
+        Held::ByConstruction(
+            "Transition::new takes both levels, and the fields are private, so one level \
+             is error[E0061] and a struct literal is refused for its private fields",
+        ),
+    ),
+    (
+        "an astrophysically calibrated claim missing its reference object or the \
+         parameters assumed for it",
+        Held::Here("a calibrated claim missing one of its three parts"),
+    ),
+    (
+        "a value stored without its unit",
+        Held::ByConstruction(
+            "the unit is a field of Claim with no default, so a value without one does \
+             not compile",
+        ),
+    ),
+    (
+        "a line position stored without its convention",
+        Held::ByConstruction(
+            "a stored position is a VacuumWavenumber and there is no other representation, \
+             so a bare number is error[E0308]",
+        ),
+    ),
+];
+
+/// The rows claiming a case in this file that no case reaches.
+///
+/// A pure function over the table and the constraints the cases tripped, so it
+/// can be shown to refuse something on constructed input rather than only over a
+/// tree that happens to agree with itself.
+fn unbacked(rows: &[(&str, Held)], covered: &BTreeSet<&'static str>) -> Vec<&'static str> {
+    rows.iter()
+        .filter_map(|(_, held)| match held {
+            Held::Here(constraint) if !covered.contains(constraint) => Some(*constraint),
+            _ => None,
+        })
+        .collect()
+}
+
+/// A row saying a case holds it, where no case does, is reported.
 #[test]
-fn the_constraints_that_have_no_record_yet_are_named() {
-    let not_covered = [
-        (
-            "a transition missing a level",
-            "there is no transition record, which is #22",
-        ),
-        (
-            "a line position stored without its convention",
-            "nothing stores a line position, which is #11's second half and #27",
-        ),
-        (
-            "a species that does not parse into canonical form",
-            "refused in the species parser and proved in tests/species_round_trip.rs, \
-             which is a different file rather than a gap",
-        ),
-    ];
+fn a_row_claiming_a_case_that_does_not_exist_is_refused() {
+    let covered: BTreeSet<&'static str> = ["a cycle in the provenance graph"].into();
 
-    println!("schema validation does not cover:");
-    for (constraint, why) in not_covered {
-        println!("  {constraint}: {why}");
+    let claimed = [(
+        "a transition missing a level",
+        Held::Here("a transition missing a level"),
+    )];
+    assert_eq!(
+        unbacked(&claimed, &covered),
+        vec!["a transition missing a level"],
+        "a row naming a case that no case reaches must be reported"
+    );
+
+    // The neighbour, one placement away. The same constraint held by the
+    // compiler owes no case and is not reported.
+    let by_construction = [(
+        "a transition missing a level",
+        Held::ByConstruction("Transition::new takes both levels"),
+    )];
+    assert!(
+        unbacked(&by_construction, &covered).is_empty(),
+        "a row held by the compiler owes no case"
+    );
+}
+
+/// Every row saying a case holds it names a constraint a case above tripped.
+///
+/// This is what stops a constraint being moved out of the uncovered list by
+/// relabelling it. Moving a row to `Here` reds until a fixture reaches it, and
+/// moving one to `ByConstruction` or `Elsewhere` is a claim a reader checks
+/// against the reason written beside it.
+#[test]
+fn every_row_held_by_a_case_has_one() {
+    let covered: BTreeSet<&'static str> = CASES
+        .iter()
+        .flat_map(|case| (case.run)())
+        .map(|refusal| refusal.constraint())
+        .collect();
+
+    let missing = unbacked(&MILESTONE, &covered);
+    assert!(
+        missing.is_empty(),
+        "rows saying a case in this file holds them, where no case does: {missing:?}"
+    );
+}
+
+/// Where each constraint is held, printed by every run.
+///
+/// The three placements are printed apart rather than together, so a run cannot
+/// be read as one where every constraint has a fixture. Two of them have none
+/// and can have none.
+#[test]
+fn where_each_constraint_is_held_is_printed() {
+    println!("schema validation, constraint by constraint:");
+    for (constraint, held) in MILESTONE {
+        match held {
+            Held::Here(name) => println!("  {constraint}: a case here, refusing {name:?}"),
+            Held::ByConstruction(why) => {
+                println!("  {constraint}: no case, and none possible, because {why}");
+            }
+            Held::Elsewhere(where_it_is) => {
+                println!("  {constraint}: not here. It is in {where_it_is}");
+            }
+        }
     }
-
-    // The list is prose and nothing reads it. What is refusable is that the
-    // constraints this register does declare all have a case, which is the test
-    // above.
-    assert_eq!(not_covered.len(), 3);
 }
