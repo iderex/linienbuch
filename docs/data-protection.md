@@ -82,17 +82,17 @@ lost too.
 ## What backs which sentence
 
 Backed. That this program opens no socket is backed by
-`tests/environment_guard.rs`, which is part of the default suite. It searches
-the tracked sources under `src/` and `tests/` for the API surfaces in
+`tests/environment_guard.rs`, which is part of the default suite. It reads every
+`.rs` file under `src/` and `tests/`, looks for the API surfaces in
 `tests/environment_guard/needles.txt` and refuses a line that names one without
 a loopback address literal beside it. Its bounds are written in `docs/testing.md`
 and are not softened here: the needle list is a floor rather than a boundary, a
 call reached through a name it does not hold passes, a call split across two
 lines is not seen, and two directories are outside its subject.
 
-Backed, and narrower than it reads. The guard's subject is the tracked sources
-of the default suite, so what it establishes is a property of those sources
-rather than of every route by which this repository could reach a network.
+Backed, and narrower than it reads. The guard's subject is the source files of
+the default suite, so what it establishes is a property of those files rather
+than of every route by which this repository could reach a network.
 `SECURITY.md` already records that gap against #56 and this document does not
 restate the argument.
 
