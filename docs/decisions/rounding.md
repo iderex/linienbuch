@@ -1,8 +1,7 @@
 # How a value and its uncertainty are rounded
 
-Decided for issue #40, before the first formatting path rather than after five
-of them. Present tense: this file states the rule, the reason for each half of
-it, and what it does not cover.
+Decided for issue #40, before the first formatting path and not after five of
+them. The rule, the reason for each half of it, and what it does not cover.
 
 ## The decision
 
@@ -30,14 +29,14 @@ decides anything. A rule that lives in a paragraph is argued with once per
 request; a rule that lives in one function that is searched for is argued with by
 editing it, and an edit is a thing a reader can see.
 
-So the direction is arithmetic rather than a review habit. Rounding to nearest
+So the direction is arithmetic and not a review habit. Rounding to nearest
 reports a number smaller than the true one about half the time, and the half it
 understates is the half a reader would want to have been told about.
 
 ## Why two significant figures
 
 Three answers were available and they produce three different headline numbers,
-which is why the choice is written down rather than arrived at by whichever
+which is why the choice is written down instead of arrived at by whichever
 rounding call went in first.
 
 **The number of figures the source quoted** fails the sentence it has to satisfy,

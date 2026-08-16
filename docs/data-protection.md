@@ -1,7 +1,7 @@
 # Data protection
 
 Where this program runs, what it keeps, and what it sends. The statement is in
-the documentation rather than only in the code because a property nobody has
+the documentation and not only in the code, because a property nobody has
 written down is one a later feature is not argued against.
 
 Every sentence below is either backed by something in this tree or marked as
@@ -17,7 +17,7 @@ program runs on.
 There is no telemetry, no usage reporting, no update check and no error
 submission. None of those arrives later as a setting that is off by default
 either. Nothing is collected and nothing is sent, in any form, and that is the
-standing answer rather than a state of the tree that a feature could move: the
+standing answer and not a state of the tree that a feature could move: the
 decision is recorded on #1 and carries no exception and no revisit condition.
 
 ## The outbound traffic

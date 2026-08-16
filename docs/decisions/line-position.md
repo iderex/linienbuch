@@ -1,8 +1,8 @@
 # One internal representation for line position
 
-Decided for issue #11. Present tense: this file states what a line position is
-stored as inside this board, where a conversion happens, and what is done with a
-value that arrived without saying what it meant.
+Decided for issue #11. A line position has one stored form inside this board.
+Conversions happen at named places, and a value that arrived without saying what
+it meant is handled below.
 
 ## The decision
 

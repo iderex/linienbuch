@@ -8,7 +8,7 @@ and what it does not.
 
 The atomic case shapes the schema. If the molecular case is considered only
 afterwards, the schema is wrong in a way that is expensive to fix, so the four
-things that differ are decided before the record model is built rather than after.
+things that differ are decided before the record model is built and not after.
 
 ## Identity
 
@@ -25,7 +25,7 @@ two are not enough on their own.
 So the molecular level identity is its own identity and not a widened version of
 the atomic one. It is the molecule, the isotopologue, the electronic state where
 the transition is rovibronic, and the set of quantum numbers the source gives,
-recorded as a set of named values rather than as a fixed list of fields, because
+recorded as a set of named values, not as a fixed list of fields, because
 the set differs by molecule and a schema with a column per quantum number would
 be wrong for the next molecule.
 
@@ -36,7 +36,7 @@ the number of levels within any usable energy tolerance is large. Where the
 quantum numbers do not match, the transition does not join, and there is no
 fallback that recovers it.
 
-This is the first place the two cases genuinely diverge rather than differing in
+This is the first place the two cases genuinely diverge instead of differing in
 degree, and it is the reason the identity is a variant rather than a field.
 
 ## Isotopologues
@@ -54,7 +54,7 @@ What the molecular case adds is that the isotopologue is part of the identity an
 not an attribute of it. A record where the isotopologue is a nullable column
 beside the formula allows a claim about an unspecified isotopologue, and there is
 no such thing: a source that does not say which isotopologue it measured has told
-you less than it appears to, and that is a gap to record rather than a default to
+you less than it appears to, and that is a gap to record, not a default to
 fill.
 
 ## Intensity is not a property of a transition alone
@@ -80,10 +80,10 @@ rather than a transcription.
 So a comparison of intensities across those families is not a comparison of like
 with like unless three things are recorded per claim. The reference temperature.
 The units. And the identity of the partition function used, which is a reference
-to a specific tabulation rather than the name of a function.
+to a specific tabulation and not the name of a function.
 
 The decision is that all three sit alongside any intensity as required parts of
-the claim rather than as optional metadata. A schema storing an intensity as a
+the claim and never as optional metadata. A schema storing an intensity as a
 number and a unit cannot express the disagreement between two sources, which
 means it reports agreement where there is none, which is the failure this whole
 board is against arriving through a door the atomic case never opens.
@@ -92,7 +92,7 @@ The consequence is a refusal, and it is the same shape as the refusal in
 `docs/decisions/shared-ancestry.md`. Two intensities whose reference temperatures
 differ, or whose partition function identities differ, are not comparable until
 both conversions are recorded. The operation refuses and says which part is
-missing rather than converting with an assumed partition function, because an
+missing instead of converting with an assumed partition function, because an
 assumed partition function is an invented number that then propagates as data.
 
 An Einstein coefficient is not in this family at all. It is a property of the
@@ -136,7 +136,7 @@ The typed half is held. `src/spectroscopy/intensity.rs` makes an intensity
 without its reference temperature, its unit and its partition function identity
 unrepresentable rather than invalid: the three are the parts of a `Convention`,
 the fields are private, and the one constructor takes all three. Two intensities
-in two conventions are refused rather than converted, and the refusal names which
+in two conventions are refused and not converted, and the refusal names which
 part differs.
 
     cargo test --locked --test intensity_conventions
@@ -153,7 +153,7 @@ as an atom, which is the other piece a machine holds:
     test an_unparseable_species_is_refused_with_its_reason ... ok
 
 The refusal it asserts for `H2O` is `MoreThanOneElement`, which says the input is
-a species this parser does not cover rather than nonsense, and points here.
+a species this parser does not cover instead of nonsense, and points here.
 
 `PROSE, NOT ENFORCEMENT`, `OWED`, issue #50, for what is left. The type refuses an
 intensity built without its convention; nothing refuses a second intensity type
