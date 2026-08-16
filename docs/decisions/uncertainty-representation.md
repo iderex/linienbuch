@@ -1,8 +1,8 @@
 # How an uncertainty is represented
 
-Decided for issue #13. Present tense: this file states the states an uncertainty
-can be in, what may be done with each, and what is kept from the source whatever
-this board derives.
+Decided for issue #13. An uncertainty is in one of four states. What may be done
+with each, and what is kept from the source whatever this board derives, is set
+out below.
 
 ## The four states
 

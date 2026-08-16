@@ -1,8 +1,8 @@
 # The version scheme, and what a changelog entry owes the reader
 
-Decided for issue #63. Present tense: this file states what a version number on
-this board means, which part of it a given change moves, where an upstream
-change is recorded instead, and what an entry in `CHANGELOG.md` has to say.
+Decided for issue #63. What a version number on this board means, which part of
+it a given change moves, where an upstream change is recorded instead, and what
+an entry in `CHANGELOG.md` has to say.
 
 ## The question an ordinary scheme does not answer
 

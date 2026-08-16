@@ -5,7 +5,7 @@ with no elevated privileges, and with no network. A test that cannot meet all
 three does not get an exception here. It moves to the separate integration
 harness, where its cost is visible.
 
-This is a birth requirement rather than a later cleanup, because a suite that
+This is a birth requirement and not a later cleanup, because a suite that
 has already grown a display dependency does not lose it again cheaply.
 
 ## No display
@@ -33,7 +33,7 @@ A suite whose result depends on a remote service reports that service's
 availability. A red run then means nothing until somebody has investigated, and
 the investigation ends in a shrug often enough that the run stops being read.
 
-The failure is also slow rather than sharp. A socket to a host that is not
+The failure is also slow instead of sharp. A socket to a host that is not
 answering does not fail, it waits, and the cost lands on whoever is waiting
 rather than on whoever wrote the test.
 
@@ -49,7 +49,7 @@ A line that names one of those APIs and carries no address literal is refused
 too. The guard cannot see where such a call goes, and a guard that passes what
 it cannot read is one anybody walks through by moving a string into a variable.
 
-The refusal is a search over the sources rather than a sandbox around the
+The refusal is a search over the sources and not a sandbox around the
 running test, because nothing in the standard library lets one test revoke
 another test's access to a socket. Three things follow and none of them is
 softened.
@@ -65,7 +65,7 @@ Two directories are skipped and both are named here rather than only in the
 code. `tests/environment_guard/fixtures/` is where the files that violate the
 rule deliberately live. `tests/integration/` is the harness below, which is not
 part of the default suite and whose whole purpose is the network, so the guard's
-subject is the default suite's sources rather than every file in the tree.
+subject is the default suite's sources and not every file in the tree.
 
 Those two are the whole of the exclusion list. A third would be worth arguing
 about, and there is not one.
@@ -87,7 +87,7 @@ refuse, one that it must not.
 `refused/address_from_a_variable.rs` is the same test with the address moved out
 of the line, so the guard cannot read it.
 
-`refused/binds_every_interface.rs` binds to every interface rather than to
+`refused/binds_every_interface.rs` binds to every interface and not to
 loopback, which is the case that raises the consent dialog.
 
 `allowed/loopback_only.rs` is the neighbour of the first, one address literal
@@ -109,7 +109,7 @@ The guard's own target, which is the one the rest of this section is about:
     Running tests\environment_guard.rs
     test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-The refusal, demonstrated rather than asserted. A copy of the upstream-fetching
+The refusal, demonstrated and not asserted. A copy of the upstream-fetching
 fixture was placed at `tests/network_dependent.rs`, where cargo does compile it,
 and the guard was run:
 
@@ -254,7 +254,7 @@ quietly left out of the count.
 ### A failure here is a finding
 
 A source that changed its format, or moved, or went away, is real information
-about the field rather than a broken test. A failing leg prints the leg name, the
+about the field, not a broken test. A failing leg prints the leg name, the
 retrieval date and what came back, in a shape somebody can paste into an issue.
 
 ### The absence is printed, not assumed

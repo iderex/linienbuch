@@ -1,8 +1,8 @@
 # How an astrophysically calibrated value is marked
 
-Decided for issue #15. Present tense: this file states what marking such a claim
-means, what an answer that used one has to say, and what the arithmetic may not
-do with it.
+Decided for issue #15. An astrophysically calibrated value carries a mark, and
+the mark binds what an answer that used one has to say and what the arithmetic
+may not do with it.
 
 ## The circularity, stated once
 

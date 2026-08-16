@@ -1,8 +1,7 @@
 # Repository layout, and the boundary inside it
 
-Decided for issue #3. Present tense: this file states what the top level units
-are, which side of one boundary each is on, and how to tell whether something has
-been put on the wrong side.
+Decided for issue #3. The top level units, which side of the one boundary each
+is on, and how to tell when something has been put on the wrong side.
 
 ## Why there is a boundary at all
 

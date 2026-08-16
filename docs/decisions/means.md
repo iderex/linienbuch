@@ -1,20 +1,20 @@
 # The implementation language and toolchain
 
-Decided for issue #2. Present tense: this file states what the repository is
-built in, and the reasons it is built in that.
+Decided for issue #2. The repository is built in Rust, and the reasons follow
+the decision.
 
 ## The decision
 
 The core is Rust. The build and test driver is Cargo. The compiler version is
-pinned in a tracked file rather than taken from whatever the machine has, and
+pinned in a tracked file, not taken from whatever the machine has, and
 the dependency set is locked, so a build is a function of the commit and not of
 the day it ran. Issue #4 owns the pin, the lock and the demonstration that two
-builds agree; this file owns the choice, not its proof.
+builds agree. What is decided here is the choice, not its proof.
 
 No second language is added to the core. Whether a Python facing binding is
 added beside it is entry 3 of #1, answered there for the first release: none.
 The route into Python is the register file and the export beside it, which
-`docs/decisions/storage.md` already names, rather than a set of function calls.
+`docs/decisions/storage.md` already names, and not a set of function calls.
 What that costs is named with it: the answer logic, the profile and the refusal,
 reaches a Python caller only through the command.
 
@@ -29,18 +29,19 @@ The version this decision was made against:
 
 ### Conventions that look alike and are not
 
-Air wavelength against vacuum wavelength, gf against log gf, Einstein A against
-oscillator strength, wavenumber in cm^-1 against energy in eV, angstrom against
-nanometre. Each pair produces a plausible number when confused, which is why a
+Five pairs in this field look alike and are not: air wavelength against vacuum
+wavelength, gf against log gf, Einstein A against oscillator strength,
+wavenumber in cm^-1 against energy in eV, and angstrom against nanometre. Each
+pair produces a plausible number when confused, which is why a
 test written by somebody who already understands the distinction does not catch
 it. Rust gives two things against this class. A wrapper type over a float
 carries no arithmetic it is not given, so adding a vacuum wavenumber to an air
 wavelength does not compile, and no implicit widening exists anywhere in the
 language to route around it. Matching on an enumeration is exhaustive, so adding
 a source, a method class or a wavelength convention forces every place that
-decides on one to be revisited rather than falling through a default arm.
+decides on one to be revisited instead of falling through a default arm.
 
-The bound on that, stated rather than left implied. A type system refuses only
+The bound on that, stated and not left implied. A type system refuses only
 what somebody modelled as distinct types. It does not discover a convention
 nobody encoded, and a field parsed into a bare `f64` is exactly as dangerous
 here as anywhere else. What the language buys is that the discipline is
@@ -57,13 +58,13 @@ zero value: an absent field is `Option` and cannot be read as a number without
 the reader saying what happens when it is absent. This is the single strongest
 line in favour of the choice and it applies to the register more than to the
 parsers, because #12 and #13 commit the board to representing absent and graded
-uncertainty as first class states rather than as sentinel numbers.
+uncertainty as first class states, not as sentinel numbers.
 
 ### Upstream files are large
 
 Some line lists run to tens of gigabytes uncompressed, so parsing streams rather
 than loads. Rust has no garbage collector, so the resident set is a consequence
-of what the program is holding rather than of when a collector last ran, which
+of what the program is holding and not of when a collector last ran, which
 means a memory ceiling can be written as a bound on the buffers a parser owns
 and then tested against. In a collected runtime the same ceiling is a tuning
 parameter that holds on the machine it was tuned on.
@@ -78,7 +79,7 @@ Somebody reproducing a number in three years will not have this machine.
 Cargo produces a native executable with no interpreter and no dependency tree to
 resolve at run time, which is the shape that survives that gap when paired with
 a pinned input snapshot. The honest limit is that "self contained" is a property
-of a target rather than of the language: the platform C runtime is still linked
+of a target and not of the language: the platform C runtime is still linked
 in the usual configuration, and which target triples the release names, with
 what linkage, belongs to #60 and is not claimed here.
 
@@ -97,14 +98,14 @@ the time of writing.
 
 ### Tests without a display, without elevation, without the network
 
-`cargo test` is in the toolchain rather than beside it, needs no display server
+`cargo test` is in the toolchain and not beside it, needs no display server
 and no elevated account, and a fresh crate builds with the network unavailable
 to it:
 
     cargo build --offline
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.25s
 
-Property testing is a library rather than a language feature in every candidate
+Property testing is a library and not a language feature in every candidate
 here, so it is not a discriminator. Coverage guided fuzzing is, because #31
 requires a fuzz target for every upstream parser. Rust's usual answer is
 cargo-fuzz, and it is not installed on the machine this decision was written on:
@@ -112,7 +113,7 @@ cargo-fuzz, and it is not installed on the machine this decision was written on:
     cargo fuzz --version
     error: no such command: `fuzz`
 
-So the fuzzing requirement is carried as a cost rather than as a solved point.
+So the fuzzing requirement is carried as a cost and not as a solved point.
 What it costs to install it, on which platforms, and whether the release
 platforms in #60 all support it, is #31's to answer. Naming it here as available
 would be a claim nothing backs.
@@ -125,10 +126,10 @@ The strongest of the three, and the one the argument had to be made against
 rather than around. Go refuses arithmetic between distinct named types just as
 Rust does, so the headline convention argument does not separate them, and Go's
 build is simpler, its binary is more genuinely self contained, and coverage
-guided fuzzing is in `go test` rather than in a separate tool.
+guided fuzzing is in `go test` and not in a separate tool.
 
 It loses on two specific points. The zero value, above: a struct field that was
-never set reads as `0.0` rather than refusing to be read, which is the exact
+never set reads as `0.0` instead of refusing to be read, which is the exact
 shape of the defect this board is built to expose. And the absence of exhaustive
 matching, which matters for a register whose whole design is a growing set of
 sources, method classes and conventions; in Go a new variant compiles everywhere
@@ -166,7 +167,7 @@ and nothing outside this repository forces another format.
 
 ## What would overturn this
 
-Written as conditions rather than as sentiment, so that a later reader can check
+Written as conditions and not as sentiment, so that a later reader can check
 whether one has occurred.
 
 Entry 3 of #1 is answered such that Python is the primary interface rather than
@@ -176,8 +177,8 @@ and the whole comparison is re-run with the weights reversed.
 A required upstream format turns out to have only a C or a Python reference
 implementation, and reimplementing it is judged a larger risk than the runtime
 it drags in. Then the forced means wins for that surface and only that surface,
-held to its smallest boundary, and this file records the exception rather than
-being replaced by it.
+held to its smallest boundary, and the exception is recorded here without
+replacing the decision.
 
 The fuzzing cost in #31 comes back as unpayable on a platform #60 names, and a
 candidate exists that pays it. The first half alone does not overturn anything;

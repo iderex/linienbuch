@@ -1,14 +1,14 @@
 # Parity with the target gate
 
-Decided for issue #47. Present tense: this file says what this board's merge gate
-is measured against, where each check of that gate lands here, and why each
-deviation is one.
+Decided for issue #47. This board's merge gate is measured against a target
+gate. Each check of that gate lands somewhere here, and each deviation carries
+its reason.
 
 ## The target
 
 The merge gate of `iderex/jellyfin-plugin-sso`.
 
-It is the target for its shape rather than for its contents. Three properties,
+It is the target for its shape and not for its contents. Three properties,
 and each is why copying it is worth doing at all.
 
 Its ruleset is active and has no bypass actors, so the maintainer is inside it
@@ -18,7 +18,7 @@ too:
       --jq '{enforcement, bypass: .bypass_actors}'
     {"bypass":[],"enforcement":"active"}
 
-Its required set is built from first party checks rather than from a third party
+Its required set is built from first party checks and not from a third party
 review service, so nothing in the merge path is a runtime operated by somebody
 else.
 
@@ -54,7 +54,7 @@ carries no required status checks at all:
       --jq '{enforcement, bypass: .bypass_actors, rules: [.rules[].type]}'
     {"bypass":[],"enforcement":"active","rules":["deletion","non_fast_forward","pull_request"]}
 
-So the map is a plan for a gate rather than a description of one, and a red check
+So the map is a plan for a gate and not a description of one, and a red check
 on a pull request here refuses nothing. Issue #48 is what makes the checks
 already in this tree required. Nothing in this file changes that, and reading the
 map as a gate that is standing would be reading a plan as a measurement.
@@ -70,7 +70,7 @@ the issue text, and picking five by guess and dropping the rest quietly would be
 the worse error of the two available.
 
 This is the one place this file departs from its done condition as literally
-written, and it is written at the departure rather than left for a reader to
+written, and it is written at the departure instead of left for a reader to
 find.
 
 ## Adopted unchanged
@@ -86,7 +86,7 @@ plans:
 message is the same object on both boards.
 
 `Reject Trojan Source Unicode`. A bidirectional control character hides the same
-thing in either language, and the scan reads bytes rather than syntax.
+thing in either language, and the scan reads bytes, not syntax.
 
 `Audit workflows (zizmor)`. Its subject is the workflow files, which are the same
 format here as there.
@@ -105,7 +105,7 @@ language, and this board's build leg is the one its gate command already runs.
 does not is language independent in shape, and every invariant it searches for is
 this board's own. It is #50 here.
 
-`Deterministic PR-hygiene checks`. It reasons about the change rather than about
+`Deterministic PR-hygiene checks`. It reasons about the change and not about
 the code, so nothing in it is language specific, and the rules in its failing
 tier are this board's. It is #49 here.
 
@@ -134,12 +134,12 @@ carry.
 ## Adopted but resolved separately
 
 The purpose carries over, the answer is language specific, and the row names the
-issue that decides it rather than an implementation.
+issue that decides it and not an implementation.
 
 `CodeQL`. Static analysis, and which analyser fits this board's language is #52.
 
 `Analyze (csharp)`. The same check's language specific job, whose equivalent here
-is whatever #52 decides rather than a job named for a language this board does
+is whatever #52 decides, not a job named for a language this board does
 not use.
 
 ## Dropped
@@ -157,8 +157,8 @@ Beta publication. There is no channel to publish a beta into.
 Wiki lint. There is no wiki.
 
 None of the four is in the target's required set today. They are dropped from the
-map rather than from a required set, and that is why this section names them in
-prose rather than by check run name.
+map and not from a required set, and that is why this section names them in
+prose instead of by check run name.
 
 ## Added beyond the target
 
@@ -184,7 +184,7 @@ rather than a verdict.
 Fuzzing. Weekly and on request, because a fuzzing run has no bounded duration and
 a merge must not wait on one. It is #31 here.
 
-Mutation testing. Scoped and reported rather than enforced, because a low score
+Mutation testing. Scoped and reported, not enforced, because a low score
 names a missing test rather than a broken change. It is #41 here.
 
 ## What refuses a row going missing

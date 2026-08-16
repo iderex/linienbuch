@@ -1,8 +1,7 @@
 # How an upstream snapshot is pinned, and how an answer names it
 
-Decided for issue #19. Present tense: this file states what identifies a
-retrieval, what may never be done to one, and what an answer has to say about the
-ones it drew on.
+Decided for issue #19. What identifies a retrieval, what may never be done to
+one, and what an answer has to say about the ones it drew on.
 
 ## Why a version string is not enough
 

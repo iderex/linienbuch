@@ -1,9 +1,8 @@
 # How an uncertainty in log gf reaches the derived quantity
 
-Decided for issue #17. Present tense: this file states what is propagated, the
-two methods, the rule for choosing between them, what is checked before the
-arithmetic runs, what happens when that check is inconclusive, and how
-correlation enters.
+Decided for issue #17. What is propagated, the two methods, the rule for
+choosing between them, what is checked before the arithmetic runs, what happens
+when that check is inconclusive, and how correlation enters.
 
 ## What is propagated
 
@@ -19,7 +18,7 @@ release: the uncertainty in the line position and the uncertainty in the level
 energies. Both enter a real abundance through quantities this board does not
 hold. A level energy enters through the population of the lower level, which
 needs a temperature, and a temperature is a property of the caller's atmosphere
-rather than of anything a source published. So the treatment is the one #17 asks
+and not of anything a source published. So the treatment is the one #17 asks
 for in its own words. Deciding they are negligible is allowed and deciding it
 silently is not: the caller states it, the statement travels into the answer, and
 without the statement the propagation refuses.
@@ -66,7 +65,7 @@ not put the line at the same place on its curve. A regime dependent mapping
 smaller than one on the saturated part would break the technique.
 
 The standard result quoted for the damping part in the next section is taken as
-published rather than derived here, and the derivation above is checkable by
+published and not derived here, and the derivation above is checkable by
 reading and by nothing else. There is no curve of growth in this tree.
 
 ## What is regime dependent, and why it is not an input here
@@ -82,7 +81,7 @@ large change in abundance moves W almost not at all and a small error in W is
 read back as a large error in abundance.
 
 That is the sense in which strong lines are where a propagation multiplying by
-one goes wrong, and it attaches to the measured equivalent width rather than to
+one goes wrong, and it attaches to the measured equivalent width and not to
 gf.
 
 The equivalent width is not propagated here, and refusing it is the decision
@@ -96,7 +95,7 @@ propagated does it outside this board.
 ## The four exceptions
 
 The degeneracy is exact only under the assumption above, and four things break
-it. They are named individually rather than as a caveat, because the check
+it. They are named individually instead of as a caveat, because the check
 before the arithmetic asks about each one separately.
 
 **Continuous opacity or electron pressure.** An element that contributes to
@@ -107,7 +106,7 @@ changing gf does not, so the two stop being one parameter.
 together.
 
 **Departure from local thermodynamic equilibrium.** Level populations depend on
-the radiation field and on f through separate terms rather than through one
+the radiation field and on f through separate terms and not through one
 product.
 
 **Calibration feedback.** Where microturbulence, or any other parameter, is set
@@ -133,14 +132,14 @@ The rule for choosing between them. The analytic route is available exactly
 where the exact degeneracy holds, which is every propagation this board performs
 for the first release, so it is the route every answer is computed by. The Monte
 Carlo route is the independent calculation the analytic route is checked
-against, and it runs in the test suite rather than in an answer.
+against, and it runs in the test suite and not in an answer.
 
 That is a narrower rule than #17 anticipated, and the narrowing is the point of
 the decision above rather than a simplification. With the equivalent width out
 of the inputs, the map is linear with slope minus one, and a linear map is the
 case where an analytic propagation and a Monte Carlo agree by construction. The
 worked example below therefore shows agreement, and a disagreement between the
-two would be a defect in one of them rather than a property of the physics.
+two would be a defect in one of them, not a property of the physics.
 
 The Monte Carlo keeps its place for two reasons that survive the narrowing. It
 is the only check that does not share an implementation with the thing it
@@ -172,7 +171,7 @@ that does not apply, because that is the common case, and taking it would put a
 number in front of a reader that rests on an assumption nobody made. The
 refusal names which of the four was not established.
 
-A refusal is an answer. It is reported in place of the number rather than as an
+A refusal is an answer. It is reported in place of the number and not as an
 error beside a number, which is the same rule `docs/decisions/shared-ancestry.md`
 sets for a refused marginalisation and the one #43 says is most likely to be lost
 when the output is written.

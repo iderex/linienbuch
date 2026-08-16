@@ -33,9 +33,9 @@ register is that there is one place a claim lives.
 
 An export is stamped with the commit of the program that produced it and the
 snapshot identifiers of every source that contributed, so that a Parquet file
-found on its own can be traced back rather than being a table of numbers with no
+found on its own can be traced back and is not a table of numbers with no
 history. That is the same discipline as an answer naming its profile in #16,
-applied to a file rather than to a row.
+applied to a file and not to a row.
 
 ## Why SQLite rather than the alternatives
 

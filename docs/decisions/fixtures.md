@@ -1,6 +1,6 @@
 # Fixtures this repository is allowed to carry
 
-Decided for issue #7. Present tense: this file states which bytes may land under
+Decided for issue #7. The rules below cover which bytes may land under
 `tests/fixtures/`, what has to be written down beside them, and how they are
 stored.
 
